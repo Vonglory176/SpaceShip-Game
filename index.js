@@ -1,8 +1,8 @@
 //Background/Window Code
 const canvas = document.getElementById("canvas1")
 const ctx = canvas.getContext("2d")
-canvas.width = 1000
-canvas.height = 1000
+canvas.width = 900
+canvas.height = 900
 
 // Background image
 let bgImage = new Image()

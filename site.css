@@ -1,8 +1,35 @@
+/* body {
+    top:calc()
+} */
+
+#leftContainer img {
+    padding-bottom: 15px;
+}
+
+.noLimit {
+    max-width: 1300px !important;
+}
+
 canvas {
-    position: absolute;
+    position: relative;
     background: lightblue;
-    height:1000px;
-    width:1000px;
-    top:0;
-    left:0;
+    /* top:0;
+    left:0; */
+}
+
+.row {
+    margin:0;
+}
+
+p {font-size:large;}
+@media (max-width:1070px) {
+    content {margin-top: 15px !important}
+    header h1 {display: none;}
+    #centerContainer h1 {display:block !important}
+    #leftContainer h2, #rightContainer h2 {font-size:x-large !important;}
+    p {font-size: medium;}
+    .row {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
 }

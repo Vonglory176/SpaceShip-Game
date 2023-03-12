@@ -4,11 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="site.css">
     <title>Game</title>
 </head>
-<body>
-    <canvas id="canvas1"></canvas>
+<body class="container noLimit" style="min-width:825px; background-color: gray;">
+
+    <header class="row justify-content-center">
+        <h1 style="font-size: 50px;">Asteroid Gauntlet</h1>
+    </header>
+
+    <content class="container row border p-2" style="min-width:825px; max-width:1252px;">
+
+        <div id="leftContainer" class="col-2 text-center" style="background-color: blueviolet;"> <!-- col-3 -->
+            <h2 class="text"><u>Objective</u></h2>
+            <p>Navigate an asteroid field to collect 5 (PLACEHOLDER) as they come into view!
+                Be careful though, things might get harder the better you do..
+            </p>
+            <img src="images/objectiveCollect.png" class="img-fluid">
+            <h2><u>Controls</u></h2>
+            <p>Use Arrow-Keys to move</p>
+            <img src="images/arrowKeys.png" class="img-fluid">
+            <p>Use Space to shoot</p>
+            <img src="images/spaceBar.png" class="img-fluid">
+        </div>
+
+        <div id="centerContainer" class=" col-8 align-self-center"> <!-- col-6 -->
+            <h1 class="text-center" style="display:none">Asteroid Gauntlet</h1>
+            <canvas id="canvas1" class="p-0 img-fluid border"></canvas> 
+            <div class="row justify-content-center">
+                <button style="font-size:xx-large;">Play</button>
+            </div>
+        </div>
+
+        <div id="rightContainer" class="col-2 text-center" style="background-color: aqua;"> <!-- col-3 -->
+            <h2><u>Score</u></h2>
+        </div>
+    </content>
+
+    <footer >
+        
+    </footer>
+
+
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script src="index.js"></script>
 </body>
 </html>
