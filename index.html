@@ -8,43 +8,52 @@
     <link rel="stylesheet" type="text/css" href="site.css">
     <title>Game</title>
 </head>
-<body class="container noLimit" style="min-width:825px; background-color: gray;">
+<body class="container noLimit" style="min-width:825px;">
 
-    <header class="row justify-content-center">
-        <h1 style="font-size: 50px;">Asteroid Gauntlet</h1>
-    </header>
+    <content class="container row justify-content-center border p-2" style="min-width:825px; max-width:1200px;">
 
-    <content class="container row border p-2" style="min-width:825px; max-width:1200px;">
-
-        <div id="leftContainer" class="col-2 text-center" style="background-color: blueviolet;"> <!-- col-3 -->
-            <h2 class="text"><u>Objective</u></h2>
-            <p>Navigate an asteroid field to collect 5 (PLACEHOLDER) as they come into view!
-                Be careful though, things might get harder the better you do..
-            </p>
+        <div id="leftContainer" class="col-2"> <!-- col-3 -->
+            <h2>Objective</h2>
+            <p>You're a rescue ship responding to an emergency call, navigate an asteroid field to collect as many lifepods as you can!
+                Be careful though, things might get harder the better you do..</p>
             <img src="images/objectiveCollect.png" class="img-fluid">
-            <h2><u>Controls</u></h2>
-            <p>Use Arrow-Keys to move</p>
+            <h2>Controls</h2>
+            <p>Arrow-Keys to move</p>
             <img src="images/arrowKeys.png" class="img-fluid">
-            <p>Use Space to shoot</p>
+            <p>Space to shoot</p>
             <img src="images/spaceBar.png" class="img-fluid">
         </div>
 
         <div id="centerContainer" class=" col-8 align-self-center"> <!-- col-6 -->
-            <h1 class="text-center" style="display:none">Asteroid Gauntlet</h1>
-            <canvas id="canvas1" class="p-0 img-fluid border"></canvas> 
-            <div class="row justify-content-center">
-                <button id="playButton" style="font-size:xx-large;">Play</button>
+            <!-- START SCREEN -->
+            <div id="startScreen" class="row justify-content-center">
+                <h1 class="container" style="font-size: 50px;">Asteroid Gauntlet</h1>
+                <span>By Skyler Conley</span>
+                <h3 class="container">Select a difficulty to start!</h3>
+                <button class="difficultyButton" id="playButtonEasy">Easy</button>
+                <button class="difficultyButton" id="playButtonNormal">Normal</button>
+                <button class="difficultyButton" id="playButtonHard">Hard</button>
+            </div>
+
+            <!-- GAME SCREEN -->
+            <canvas id="gameCanvas" class="p-0 img-fluid border"></canvas> 
+            
+            <!-- END SCREEN -->
+            <div id="endScreen" class="col justify-content-center">
+                <h1>Game Over</h1>
+                <h3>-Your score was <span id="endScore">0</span> on <span id="endDifficulty">Easy</span>-</h3>
+                <input type="text" placeholder="Enter your initials" maxlength="3">
+                <div class="container">
+                    <button id="submitButton">Submit</button>
+                </div>
+                
             </div>
         </div>
 
-        <div id="rightContainer" class="col-2 text-center" style="background-color: aqua;"> <!-- col-3 -->
-            <h2><u>Score</u></h2>
+        <div id="rightContainer" class="col-2"> <!-- col-3 -->
+            <h2>Score</h2>
         </div>
     </content>
-
-    <footer >
-        
-    </footer>
 
 
 

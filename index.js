@@ -1,17 +1,14 @@
-// Background/Window Code //////////////////////////////////////////////////////////////////////////////////////
-let canvas = document.getElementById("canvas1")
-let ctx = canvas.getContext("2d")
-canvas.width = 900
-canvas.height = 900
-// Background/Window Code //////////////////////////////////////////////////////////////////////////////////////
-
 // AsteroidField Code /////////////////////////////////////////////////////////////////////////////////////
 class AsteroidField {
-    constructor(imageIndex, y, speed) {
+    constructor(frameX, frameY, y, speed) {
+        this.width = 900
+        this.height = 900
+        this.frameX = frameX
+        this.frameY = frameY
         this.y = y
-        this.height = 1800
+
         this.speed = speed
-        this.imageIndex = imageIndex
+
     }
         draw(){
         ctx.save()
@@ -19,12 +16,15 @@ class AsteroidField {
 
         //function drawSprite(img, sX, sY, sW, sH, dX, dY, dW, dH) {}
         //Image Properties
-        ctx.drawImage(asteroidFieldImageArray[this.imageIndex],0, 0)
+        ctx.drawImage(asteroidFieldImage, this.width*this.frameX, this.height*this.frameY, this.width, this.height,
+            //Object Proportions
+            0, 0, this.width, this.height)
+        // ctx.drawImage(asteroidFieldImageArray[this.imageIndex],0, 0)
 
         ctx.restore()
     }
     update(modifier){
-        if(this.y > canvas.height*2) this.y = this.height-canvas.height*2
+        if(this.y > canvas.height) this.y = this.height-canvas.height*2 //Maybe issue?
         this.y += this.speed*modifier 
     }
 }
@@ -35,11 +35,11 @@ class Asteroid {
     constructor(){
         this.width = "72"
         this.height = "72"
-        this.frameX = Math.floor(Math.random() * 2)
+        this.frameX = Math.floor(Math.random() * 4)
         this.frameY = 0
         
         this.size = Math.random() * 100 + 50
-        this.speed = Math.random() * 500 + 100 // * 10 + 1
+        this.speed = Math.random() * maxAsteroidSpeed + 100 // * 10 + 1
         this.angle = Math.random() * 360
         this.spin = Math.random() < 0.5 ? -1 : 1
 
@@ -65,7 +65,7 @@ class Asteroid {
             this.y = this.size-canvas.height
             this.x = Math.random() * canvas.width
             this.size = Math.random() * 100 + 50
-            this.speed = Math.random() * 500 + 100 // * 10 + 1
+            this.speed = Math.random() * maxAsteroidSpeed + 100 // * 10 + 1
         }
         this.y += this.speed*modifier
 
@@ -73,7 +73,7 @@ class Asteroid {
             player.x, player.y, player.width, player.height)) console.log("HIT!!!!!!!!!!!"), player.explode = true//gameState = false 
     }
 }
-function addAsteroid () {asteroidArray.push(new Asteroid())}
+function addAsteroid () {asteroidArray.push(new Asteroid(maxAsteroidSpeed))}
 
 // CIRCLE/RECTANGLE
 function asteroidCollision(cx, cy, radius, rx, ry, rw, rh) {
@@ -121,7 +121,7 @@ class Collectible {
         if(this.y - this.size > canvas.height || collectibleCollision()){
             this.y = 0 - this.size
             this.x = Math.random() * canvas.width
-            this.speed = Math.random() * 500 + 100 // * 10 + 1
+            // this.speed = Math.random() * 500 + 100 // * 10 + 1
         }
         this.y += this.speed*modifier
     }
@@ -134,9 +134,9 @@ function collectibleCollision(){ //Include negation for player?
         player.y + player.height/2 >= collectible.y &&
         player.y <= collectible.y + (collectible.size) // - collectible.size/5
     ) {
+        $(collectedPodSound).trigger('play')
         addAsteroid()
         collected++
-        if (collected >= 5) gameState = false 
         return true
     }
 }
@@ -154,7 +154,7 @@ class Player {
 
         this.x = canvas.width / 2 + .01450000000006 // Works?????
 	    this.y = canvas.height / 2 + .01450000000006
-        this.topSpeed = 200
+        this.topSpeed = 250
         this.speedIncrease = 10
         this.speedLoss = 1
         this.speedX = 0
@@ -181,26 +181,36 @@ class Player {
     }
     update(modifier){
         //Exploding Check
-        if(this.explode === true && collected != 5) {
+        if(this.explode === true) {
             if (this.frameY < 2) {
-                gameState = false //DEBUGGING
+                // gameState = false //DEBUGGING
+                $(thrusterSound).trigger('pause')
+                $(collisionSound).trigger('play')
                 this.width = "100"
                 this.height = "100"
                 this.frameX = 0
                 this.frameY = 2
             }
-            else if (this.frameY === 2 && this.tally < 1) this.tally += modifier
-            else if (this.tally < 1.1) {
+            else if (this.frameY === 2 && this.tally < 1) {
+                $(electricitySound).trigger('play')
+                this.tally += modifier
+            }
+            else if (this.tally < 1.8) {
+                $(explosionSound).trigger('play')
                 this.frameY = 3
                 this.tally += modifier
             }
-            else if (this.tally > 1.1) gameState = false
+            else if (this.tally > 1.8) {
+                $(gameOverSound).trigger('play')
+                gameState = false
+            }
         }
         else {
             //PLAYER KEYPRESS CHECKS
             let right = 39, left = 37, up = 38, down = 40, shoot = 32
             if (up in keysDown || down in keysDown || left in keysDown || right in keysDown) {
-                
+                $(thrusterSound).trigger('play')
+
                 //Top Left
                 if(up in keysDown && left in keysDown && this.y > (this.height/2) && this.x > (this.width/2)){
                     this.speedY += this.speedY > -this.topSpeed ? -this.speedIncrease : 0
@@ -269,6 +279,7 @@ class Player {
             else {
                 this.action = (shoot in keysDown ?  'idle shoot' : 'idle')
                 
+                $(thrusterSound).trigger('pause')
                 if (this.speedY < 0) this.speedY += this.speedLoss
                 if (this.speedY > 0) this.speedY -= this.speedLoss
                 if (this.speedX < 0) this.speedX += this.speedLoss
@@ -313,70 +324,110 @@ class Player {
         }
     }
 }
-
 // Handle keyboard controls
 let keysDown = {}; // object were we add up to 5 properties when keys go down and then delete them when the key goes up
 addEventListener("keydown", function (e) { keysDown[e.keyCode] = true; }, false);
 addEventListener("keyup", function (e) { delete keysDown[e.keyCode]; }, false);
 // Player Code //////////////////////////////////////////////////////////////////////////////////////
 
+// Audio Code //////////////////////////////////////////////////////////////////////////////////////
+let gameStartSound = new Audio('sounds/GameStart.wav'); gameStartSound.volume=0.5 //Maybe use instead?
+let gameMusic = new Audio('sounds/GameMusic.wav'); gameMusic.volume=0.3
+let gameOverSound = new Audio('sounds/GameOver.wav'); gameOverSound.volume=0.5
+
+let buttonClickSound = new Audio('sounds/ButtonClick.wav'); buttonClickSound.volume=0.5
+let buttonHoverSound = new Audio('sounds/ButtonHover.wav'); buttonHoverSound.volume=0.5
+
+let thrusterSound = new Audio('sounds/Thruster.mp3'); thrusterSound.volume=0.9
+let collectedPodSound = new Audio('sounds/collectedPod.wav'); collectedPodSound.volume=0.5
+let shootSound = new Audio('sounds/Shoot.wav'); shootSound.volume=0.5
+let asteroidExplosionSound = new Audio('sounds/AsteroidExplosion.wav'); asteroidExplosionSound.volume=0.5
+
+let collisionSound = new Audio('sounds/AsteroidCollision.wav'); collisionSound.volume=0.5
+let electricitySound = new Audio('sounds/Electricity.wav'); electricitySound.volume=0.5
+let explosionSound = new Audio('sounds/Explosion.wav'); explosionSound.volume=0.5
+
+$("button").mouseenter(()=>{
+    $(buttonHoverSound).prop('currentTime',0)
+    $(buttonHoverSound).trigger('play')
+})
+$("#submitButton").click(()=>{$(buttonClickSound).trigger('play')})
+$(".difficultyButton").click(()=>{$(gameStartSound).trigger('play')})
+// Audio Code //////////////////////////////////////////////////////////////////////////////////////
+
 // General Code //////////////////////////////////////////////////////////////////////////////////////
-
 // Background image
-let bgImage = new Image()
-bgImage.src = "images/background.png";
+let canvas = document.getElementById("gameCanvas"); canvas.width = 900; canvas.height = 900
+let ctx = canvas.getContext("2d")
+let bgImage = new Image(); bgImage.src = "images/background.png"
 
-let gameState, time, collected //Game Specific
-let asteroidFieldImageArray, asteroidFieldBackgroundImage1, asteroidFieldBackgroundImage2//Animated Background
+
+let gameState, time, collected, gameDifficulty, maxAsteroidSpeed //Game Specific
+let asteroidFieldImage1, asteroidFieldImage2, asteroidFieldImage3, asteroidFieldImage4//Animated Background
 let asteroidImage, collectibleImage, playerImage//Images
 let asteroidArray, collectible, player, asteroidFieldBackground1, asteroidFieldBackground2//Objects
 
 // GAME START / RESET
-$("#playButton").click(() => {
-    $("#playButton").css("display", "none")
+$("#playButtonEasy").click(() => {startGame("Easy", 200)})
+$("#playButtonNormal").click(() => {startGame("Normal", 500)}) //Second Value is AsteroidMaxSpeed
+$("#playButtonHard").click(() => {startGame("Hard", 600)})
+
+function startGame (difficulty, asteroidSpeed) {
+    $("#startScreen").css("display", "none")
+    $("#gameCanvas").css("display", "block")
+
+    //Game
+    gameDifficulty = difficulty
+    maxAsteroidSpeed = asteroidSpeed
     time = null
-
-    asteroidFieldImageArray = new Array
-
-    asteroidFieldImageArray.push(asteroidFieldBackgroundImage1 = new Image())
-    asteroidFieldBackgroundImage1.src = "images/asteroidFieldBackgroundImage1.png"
-    asteroidFieldBackground1 = new AsteroidField (0, 0-canvas.height,10)
-
-    asteroidFieldImageArray.push(asteroidFieldBackgroundImage2 = new Image())
-    asteroidFieldBackgroundImage2.src = "images/asteroidFieldBackgroundImage2.png"
-    asteroidFieldBackground2 = new AsteroidField (1, 0-canvas.height,40)
-
     
+    //Asteroid Background
+    asteroidFieldImage = new Image()
+    asteroidFieldImage.src = "images/asteroidFieldBackgroundImage3.png"
+    
+    asteroidField1 = new AsteroidField (0, 0, 0-canvas.height, 10)
+    asteroidField2 = new AsteroidField (0, 1, 0, 10)
+    asteroidField3 = new AsteroidField (1, 0, 0 -canvas.height, 40)
+    asteroidField4 = new AsteroidField (1, 1, 0, 40)
 
+    //Asteroids
     asteroidImage = new Image()
     asteroidImage.src = "images/asteroids/asteroidSpriteSheet.png"
     asteroidArray = new Array
-    for (let i=0;i<5;i++) addAsteroid() //Creating Asteroids
+    for (let i=0;i<5;i++) addAsteroid(maxAsteroidSpeed) //Creating Asteroids
 
+    //LifePods
     collected = 0
     collectibleImage = new Image()
-    collectibleImage.src = "images/placeholderCollectible.jpg" //CHANGE TO PNG !!!
+    collectibleImage.src = "images/placeholderCollectible.jpg" //CHANGE TO PNG !!!!!!!!!!!!!!!!!
     collectible = new Collectible ()
 
+    //Player
     playerImage = new Image()
     playerImage.src = "images/spaceship/spaceShipSpriteSheet5.png"
     player = new Player()
 
+    //Start Game
     gameState = true
     requestAnimationFrame(main)
-})
+}
+
 
 function render (delta) {
     //General Reset & Background Drawing
     ctx.clearRect(0,0,canvas.width,canvas.height)
     ctx.drawImage(bgImage, 0, 0, 900, 900)
+    $(gameMusic).trigger('play')
 
     //AsteroidField Drawing
-    console.log(player.tally)
-    asteroidFieldBackground1.update(delta / 1000)
-    asteroidFieldBackground1.draw()
-    asteroidFieldBackground2.update(delta / 1000)
-    asteroidFieldBackground2.draw()
+    asteroidField1.update(delta / 1000)
+    asteroidField1.draw()
+    asteroidField2.update(delta / 1000)
+    asteroidField2.draw()
+    asteroidField3.update(delta / 1000)
+    asteroidField3.draw()
+    asteroidField4.update(delta / 1000)
+    asteroidField4.draw()
     
     //Asteroid Drawing
     for (let i = 0; i < asteroidArray.length; i++) {
@@ -417,11 +468,15 @@ function main(now) {
     render(delta)
     if (gameState === true) requestAnimationFrame(main)
     else {
-        console.log(gameState,collected)
-        // if (collected < 5) alert("Too Bad!")
-        // else alert ("Congrats!")
-        $("#playButton").css("display", "block")}
+        $(gameMusic).trigger('pause')
+        $("#gameCanvas").css("display","none")
+        $("#endScreen").css("display", "block")}
 }
 
-// requestAnimationFrame(main)
-// window.onload = setInterval(main, 1000/60)
+//Game End
+$("#submitButton").click(() => {
+    
+
+    $("#endScreen").css("display", "none")
+    $("#startScreen").css("display", "block")
+})
