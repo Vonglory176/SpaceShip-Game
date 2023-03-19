@@ -8,9 +8,37 @@
     <link rel="stylesheet" type="text/css" href="site.css">
     <title>Game</title>
 </head>
-<body class="container noLimit" style="min-width:825px;">
 
+<!-- <div class="background-container">
+    <div class="stars"></div>
+    <div class="twinkling"></div>
+</div> -->
+
+<body class="container noLimit" style="min-width:825px;">
+    
     <content class="container row justify-content-center border p-2" style="min-width:825px; max-width:1200px;">
+        <div class="star-field">
+            <!-- Top Left -->
+            <div class="layer topLeft"></div>
+            <div class="layer topLeft"></div>
+            <div class="layer topLeft"></div>
+            <div class="layer topLeft"></div>
+            <!-- Top Right -->
+            <div class="layer topRight"></div>
+            <div class="layer topRight"></div>
+            <div class="layer topRight"></div>
+            <div class="layer topRight"></div>
+            <!-- Bottom Left -->
+            <div class="layer bottomLeft"></div>
+            <div class="layer bottomLeft"></div>
+            <div class="layer bottomLeft"></div>
+            <div class="layer bottomLeft"></div>
+            <!-- Bottom Right -->
+            <div class="layer bottomRight"></div>
+            <div class="layer bottomRight"></div>
+            <div class="layer bottomRight"></div>
+            <div class="layer bottomRight"></div>
+        </div>
 
         <div id="leftContainer" class="col-2"> <!-- col-3 -->
             <h2>Objective</h2>
@@ -27,7 +55,7 @@
         <div id="centerContainer" class=" col-8 align-self-center"> <!-- col-6 -->
             <!-- START SCREEN -->
             <div id="startScreen" class="row justify-content-center">
-                <h1 class="container" style="font-size: 50px;">Asteroid Gauntlet</h1>
+                <h1 class="container">Asteroid Gauntlet</h1>
                 <span>By Skyler Conley</span>
                 <h3 class="container">Select a difficulty to start!</h3>
                 <button class="difficultyButton" id="playButtonEasy">Easy</button>
@@ -41,8 +69,8 @@
             <!-- END SCREEN -->
             <div id="endScreen" class="col justify-content-center">
                 <h1>Game Over</h1>
-                <h3>-Your score was <span id="endScore">0</span> on <span id="endDifficulty">Easy</span>-</h3>
-                <input type="text" placeholder="Enter your initials" maxlength="3">
+                <h3>-Your score was <span id="endScore"></span> on <span id="endDifficulty"></span>-</h3>
+                <input type="text" id="initialsInput" placeholder="Enter your initials" maxlength="3">
                 <div class="container">
                     <button id="submitButton">Submit</button>
                 </div>
@@ -51,7 +79,9 @@
         </div>
 
         <div id="rightContainer" class="col-2"> <!-- col-3 -->
-            <h2>Score</h2>
+            
+            <div class="row container justify-content-center"><h2>Score</h2></div>
+            <div id="scoreContainer" class=" row container justify-content-center"></div>
         </div>
     </content>
 

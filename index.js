@@ -44,7 +44,7 @@ class Asteroid {
         this.spin = Math.random() < 0.5 ? -1 : 1
 
         this.x = Math.random() * canvas.width
-        this.y = this.size/2-canvas.height
+        this.y = this.size-canvas.height
     }
     draw(){
         ctx.save()
@@ -61,7 +61,7 @@ class Asteroid {
     }
     update(modifier){
         this.angle += 10
-        if(this.y - this.size > canvas.height){
+        if(this.y - this.size/2 > canvas.height){
             this.y = this.size-canvas.height
             this.x = Math.random() * canvas.width
             this.size = Math.random() * 100 + 50
@@ -70,7 +70,7 @@ class Asteroid {
         this.y += this.speed*modifier
 
         if ( asteroidCollision(this.x, this.y, this.size*0.5, 
-            player.x, player.y, player.width, player.height)) console.log("HIT!!!!!!!!!!!"), player.explode = true//gameState = false 
+            player.x, player.y, player.width, player.height)) player.explode = true//gameState = false 
     }
 }
 function addAsteroid () {asteroidArray.push(new Asteroid(maxAsteroidSpeed))}
@@ -102,7 +102,7 @@ function asteroidCollision(cx, cy, radius, rx, ry, rw, rh) {
 class Collectible {
     constructor() {
         this.size = 50
-        this.speed = 100 // * 10 + 1
+        this.speed = 150 // * 10 + 1
         this.angle = Math.random() * 360
         this.spin = Math.random() < 0.5 ? -1 : 1
 
@@ -130,9 +130,10 @@ class Collectible {
 function collectibleCollision(){ //Include negation for player?
     if(
         player.x + player.width/2 >= collectible.x &&
-        player.x <= collectible.x + (collectible.size) && // - collectible.size/5
+        player.x <= collectible.x + (collectible.size) &&
         player.y + player.height/2 >= collectible.y &&
-        player.y <= collectible.y + (collectible.size) // - collectible.size/5
+        player.y <= collectible.y + (collectible.size)&&
+        !player.explode
     ) {
         $(collectedPodSound).trigger('play')
         addAsteroid()
@@ -160,13 +161,14 @@ class Player {
         this.speedX = 0
         this.speedY = 0
 
-        this.action = 'idle'
+        this.move = false
         this.angle = 0 //720 //0 90 180 270 360 450 540 630
         this.spin = 1 //Math.random() < 0.5 ? -1 : 1
 
         this.tally = 0
+        this.shoot = false
+        this.shootTimer = 1
         this.explode = false
-        // this.size = 100 //CHANGE LATER
     }
     draw(){
         ctx.save()
@@ -180,25 +182,27 @@ class Player {
         ctx.restore()
     }
     update(modifier){
+        this.tally += modifier
+
         //Exploding Check
         if(this.explode === true) {
-            if (this.frameY < 2) {
-                // gameState = false //DEBUGGING
+            if (this.frameY < 3) {
+                this.tally = 0
+
                 $(thrusterSound).trigger('pause')
                 $(collisionSound).trigger('play')
                 this.width = "100"
                 this.height = "100"
                 this.frameX = 0
-                this.frameY = 2
+                this.frameY = 3
             }
-            else if (this.frameY === 2 && this.tally < 1) {
+            else if (this.frameY === 3 && this.tally < 1) {
                 $(electricitySound).trigger('play')
-                this.tally += modifier
+                
             }
             else if (this.tally < 1.8) {
                 $(explosionSound).trigger('play')
-                this.frameY = 3
-                this.tally += modifier
+                this.frameY = 4
             }
             else if (this.tally > 1.8) {
                 $(gameOverSound).trigger('play')
@@ -210,75 +214,59 @@ class Player {
             let right = 39, left = 37, up = 38, down = 40, shoot = 32
             if (up in keysDown || down in keysDown || left in keysDown || right in keysDown) {
                 $(thrusterSound).trigger('play')
+                if (this.move === false) this.frameX = 0 
+                this.move = true
 
                 //Top Left
                 if(up in keysDown && left in keysDown && this.y > (this.height/2) && this.x > (this.width/2)){
                     this.speedY += this.speedY > -this.topSpeed ? -this.speedIncrease : 0
                     this.speedX += this.speedX > -this.topSpeed ? -this.speedIncrease : 0
-                    
-                    // this.y -= this.speedY*modifier
-                    // this.x -= this.speedX*modifier
                     this.angle = 630
                 }
                 //Top Right
                 else if(up in keysDown && right in keysDown && this.y > (this.height/2) && this.x < canvas.width - (this.width/2)){
                     this.speedY += this.speedY > -this.topSpeed ? -this.speedIncrease : 0
                     this.speedX += this.speedX < this.topSpeed ? this.speedIncrease : 0
-
-                    // this.y -= this.speedY*modifier
-                    // this.x += this.speedX*modifier
                     this.angle = 90
                 }
                 //Bottom Left
                 else if(down in keysDown && left in keysDown && this.y < (canvas.height - (this.height/2)) && this.x > (this.width/2)){
                     this.speedY += this.speedY < this.topSpeed ? this.speedIncrease : 0
                     this.speedX += this.speedX > -this.topSpeed ? -this.speedIncrease : 0
-
-                    // this.y += this.speedY*modifier
-                    // this.x -= this.speedX*modifier
                     this.angle = 450
                 }
                 //Bottom Right
                 else if(down in keysDown && right in keysDown && this.y < canvas.height - (this.height/2) && this.x < canvas.width - (this.width/2)){
                     this.speedY += this.speedY < this.topSpeed ? this.speedIncrease : 0
                     this.speedX += this.speedX < this.topSpeed ? this.speedIncrease : 0
-
-                    // this.y += this.speedY*modifier
-                    // this.x += this.speedX*modifier
                     this.angle = 270
                 }
                 //Top
                 else if (up in keysDown && this.y > (this.height/2)) { //  holding up key
                     this.speedY += this.speedY > -this.topSpeed ? -this.speedIncrease : 0
-                    // this.y -= this.speedY*modifier
                     this.angle = 0
                 }
                 //Bottom
                 else if (down in keysDown && this.y < canvas.height - (this.height/2)) { //  holding down key
                     this.speedY += this.speedY < this.topSpeed ? this.speedIncrease : 0
-                    // this.y += this.speedY*modifier
                     this.angle = 360	
                 }
                 //Left
                 else if (left in keysDown && this.x > (this.width/2)) { // holding left key
                     this.speedX += this.speedX > -this.topSpeed ? -this.speedIncrease : 0
-                    // this.x -= this.speedX*modifier
                     this.angle = 540
                 }
                 //Right
                 else if (right in keysDown && this.x < canvas.width - (this.width/2)) { // holding right key
                     this.speedX += this.speedX < this.topSpeed ? this.speedIncrease : 0
-                    // this.x += this.speedX*modifier
                     this.angle = 180
                 }
-    
-                //Moving while shooting?
-                this.action = (shoot in keysDown ? 'move shoot' : 'move')
             }
             //Shooting while idle?
             else {
-                this.action = (shoot in keysDown ?  'idle shoot' : 'idle')
+                this.move = false
                 
+                //Inertia + Movement Translation
                 $(thrusterSound).trigger('pause')
                 if (this.speedY < 0) this.speedY += this.speedLoss
                 if (this.speedY > 0) this.speedY -= this.speedLoss
@@ -291,39 +279,74 @@ class Player {
             if (this.speedX < 0 && this.x > (this.width/2)) this.x += this.speedX*modifier
             if (this.speedX > 0 && this.x < canvas.width - (this.width/2)) this.x += this.speedX*modifier
 
-
                     //SPRITE UPDATE ON ACTION
             //Idle
             // console.log(this.action)
-            if (this.action === 'idle') { this.frameX = this.frameY = 0 }
-        
-            //Shooting
-            else if (this.action === 'idle shoot') {
-                this.frameY = 0
-                // if (!(0 < this.frameX < 4)) this.frameX = 1
-                // else ()
-                this.frameX = 1
+
+            //Shooting?
+            if (shoot in keysDown && this.shootTimer < this.tally) {
+                $(shootSound).trigger('play')
+                this.shoot = true
+                this.tally = 0
             }
-        
-            //Moving
-            else if (this.action === 'move') {
+
+            if (this.shoot) {
+                if(this.shootTimer < this.tally) this.shoot = false
+            }
+
+            if (this.move) {
+                this.frameY = this.shoot ? 1 : 2 
+
                 //Engine Start
-                if(this.frameY != 1) {
-                    this.frameY = 1
-                    this.frameX = 0
-                }
+                if (this.frameX < 3) this.frameX++
+
                 //Engine On
                 else if (this.frameX >= 8) this.frameX = 3
                 else this.frameX++
             }
-            //Moving and Shooting
-            else if (this.action === 'move shoot') {
-                this.frameY = 0
-                this.frameX = 4
+
+            //Idle
+            else if (this.move === false) {
+                if (this.shoot === false) this.frameX = this.frameY = 0 //Idle Shooting
+                else {
+                    this.frameX = 1
+                    this.frameY = 0 
+                }
             }
         }
     }
 }
+class Bullet {
+    constructor() {
+        this.width = "36"
+        this.height = "78"
+
+        // this.size = 50
+        this.speed = 300
+        this.angle = player.angle
+
+        this.x = player.x
+        this.y = player.y
+    }
+    draw(){
+        ctx.save()
+        ctx.translate(this.x,this.y)
+        ctx.rotate(this.angle * Math.PI/360)
+        ctx.drawImage(collectibleImage, 0 - this.size/2, 0- this.size/2, this.size, this.size)
+        ctx.restore()
+    }
+    update(modifier){
+        if(this.y + this.height < canvas.height||
+           this.y - this.height > canvas.height||
+           this.x + this.width < canvas.width||
+           this.x - this.width > canvas.width){
+            this.y = 0 - this.size
+            this.x = Math.random() * canvas.width
+        }
+        this.y += this.speed*modifier
+    }
+}
+
 // Handle keyboard controls
 let keysDown = {}; // object were we add up to 5 properties when keys go down and then delete them when the key goes up
 addEventListener("keydown", function (e) { keysDown[e.keyCode] = true; }, false);
@@ -361,23 +384,30 @@ let canvas = document.getElementById("gameCanvas"); canvas.width = 900; canvas.h
 let ctx = canvas.getContext("2d")
 let bgImage = new Image(); bgImage.src = "images/background.png"
 
-
-let gameState, time, collected, gameDifficulty, maxAsteroidSpeed //Game Specific
+let gameState, time, collected, difficulty, maxAsteroidSpeed //Game Specific
 let asteroidFieldImage1, asteroidFieldImage2, asteroidFieldImage3, asteroidFieldImage4//Animated Background
 let asteroidImage, collectibleImage, playerImage//Images
 let asteroidArray, collectible, player, asteroidFieldBackground1, asteroidFieldBackground2//Objects
 
-// GAME START / RESET
-$("#playButtonEasy").click(() => {startGame("Easy", 200)})
-$("#playButtonNormal").click(() => {startGame("Normal", 500)}) //Second Value is AsteroidMaxSpeed
-$("#playButtonHard").click(() => {startGame("Hard", 600)})
+//Score Keeping
+let scoreArray = []
+function score (initials) {
+    this.initials = initials
+    this.collected = collected
+    this.difficulty = difficulty
+}
 
-function startGame (difficulty, asteroidSpeed) {
+// GAME START / RESET
+$("#playButtonEasy").click(() => {startGame(1, 200)})
+$("#playButtonNormal").click(() => {startGame(2, 500)}) //Second Value is AsteroidMaxSpeed
+$("#playButtonHard").click(() => {startGame(3, 600)})
+
+function startGame (gameDifficulty, asteroidSpeed) {
     $("#startScreen").css("display", "none")
     $("#gameCanvas").css("display", "block")
 
     //Game
-    gameDifficulty = difficulty
+    difficulty = gameDifficulty
     maxAsteroidSpeed = asteroidSpeed
     time = null
     
@@ -448,7 +478,7 @@ function render (delta) {
     ctx.font = "24px Helvetica";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
-    ctx.fillText("PLACEHOLDER Collected: " + collected, 32, 32);
+    ctx.fillText("LifePods Collected: " + collected, 32, 32);
 }
 
 //Game Loop
@@ -469,14 +499,38 @@ function main(now) {
     if (gameState === true) requestAnimationFrame(main)
     else {
         $(gameMusic).trigger('pause')
+
+        $("#endScore").text(`${collected? collected : 0}`)
+        $("#endDifficulty").text(`${difficultyTranslator(difficulty)}`)
+
         $("#gameCanvas").css("display","none")
-        $("#endScreen").css("display", "block")}
+        $("#endScreen").css("display", "block")
+    }
 }
 
 //Game End
 $("#submitButton").click(() => {
-    
+    let initials = ($("#initialsInput").val()).trim()
+    if (initials) {
+        scoreArray.push(new score(initials))
+   
+
+        $("#scoreContainer").html("")
+        for (let i=0;i<scoreArray.length;i++) $("#scoreContainer").append(`<p>${(scoreArray[i].initials).toUpperCase()}: ${scoreArray[i].collected} ${difficultyTranslator(scoreArray[i].difficulty)}</p>`)
+
+    }
 
     $("#endScreen").css("display", "none")
     $("#startScreen").css("display", "block")
 })
+
+function difficultyTranslator (difficulty) {
+    if (difficulty === 1) return "Easy"
+    else if (difficulty === 2) return "Normal"
+    else if (difficulty === 3) return "Hard"
+}
+
+function scoreArraySort () {
+    scoreArray = scoreArray.sort((p1, p2) => (p1.difficulty > p2.difficulty) ? -1 : (p1.difficulty < p2.difficulty) ? 1 : 0) //Sorting by Difficulty
+    scoreArray = scoreArray.sort((p1, p2) => (p1.collected > p2.collected) ? -1 : (p1.collected > p2.collected) ? 1 : 0) //Sorting by Score
+}
