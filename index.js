@@ -24,8 +24,10 @@ class AsteroidField {
         ctx.restore()
     }
     update(modifier){
-        if(this.y > canvas.height) this.y = this.height-canvas.height*2 //Maybe issue?
-        this.y += this.speed*modifier 
+        if (!player.explode){
+            if(this.y > canvas.height) this.y = this.height-canvas.height*2 //Maybe issue?
+            this.y += this.speed*modifier 
+        }
     }
 }
 // AsteroidField Code /////////////////////////////////////////////////////////////////////////////////////
@@ -45,6 +47,10 @@ class Asteroid {
 
         this.x = Math.random() * canvas.width
         this.y = this.size-canvas.height
+
+        this.explode = false
+        this.explodeFrameDuration = 0.5
+        this.tally
     }
     draw(){
         ctx.save()
@@ -60,47 +66,90 @@ class Asteroid {
         ctx.restore()
     }
     update(modifier){
-        this.angle += 10
-        if(this.y - this.size/2 > canvas.height){
-            this.y = this.size-canvas.height
-            this.x = Math.random() * canvas.width
-            this.size = Math.random() * 100 + 50
-            this.speed = Math.random() * maxAsteroidSpeed + 100 // * 10 + 1
+        if (!player.explode){
+            //If Asteroid Not Shot
+            if (!this.explode) {
+                this.angle += 10
+                if(this.y - this.size/2 > canvas.height) this.resetPosition()
+                this.y += this.speed*modifier
+    
+                // if (this.asteroidCollision(player.x, player.y, player.width, player.height, "player")) player.explode = true//gameState = false 
+            }
+            //If Asteroid Shot
+            else {
+                this.tally += modifier
+                if (this.frameX < 3) {
+                    if (this.tally > this.explodeFrameDuration) {
+                        this.frameX++
+                        this.tally = 0
+                    }
+                }
+                else {
+                    this.explode = false
+                    this.frameY = 0
+                    this.resetPosition()
+                }
+            }
         }
-        this.y += this.speed*modifier
-
-        if ( asteroidCollision(this.x, this.y, this.size*0.5, 
-            player.x, player.y, player.width, player.height)) player.explode = true//gameState = false 
     }
-}
-function addAsteroid () {asteroidArray.push(new Asteroid(maxAsteroidSpeed))}
-
-// CIRCLE/RECTANGLE
-function asteroidCollision(cx, cy, radius, rx, ry, rw, rh) {
-    // function collisionDetection() {
+    resetPosition () {
+        this.y = this.size-canvas.height
+        this.x = Math.random() * canvas.width
+        this.frameX = Math.floor(Math.random() * 4)
+        this.size = Math.random() * 100 + 50
+        this.speed = Math.random() * maxAsteroidSpeed + 100 // * 10 + 1
+    }
+    asteroidCollision(rx, ry, rw, rh, objectType) { //cx, cy, radius, 
+        // function collisionDetection() {
         // temporary variables to set edges for testing
+        let cx = this.x
+        let cy = this.y
+        let radius = this.size*0.5
+
         let testX = cx;
         let testY = cy;
-      
+        
         // which edge is closest?
         if (cx < rx)         testX = rx;      // test left edge
         else if (cx > rx+rw) testX = rx+rw;   // right edge
         if (cy < ry)         testY = ry;      // top edge
         else if (cy > ry+rh) testY = ry+rh;   // bottom edge
-      
+        
         // get distance from closest edges
         let distX = cx-testX;
         let distY = cy-testY;
         let distance = Math.sqrt( (distX*distX) + (distY*distY) );
-      
+        
         // if the distance is less than the radius, collision!
-        if (distance <= radius) return true;
-      }
+        if (distance <= radius && !this.explode) {
+            if (objectType === "bullet" && rw > 0) {
+                $(asteroidExplosionSound).prop('currentTime',0)
+                $(asteroidExplosionSound).trigger('play')
+                //ADD EXPLOSION SPRITE
+                this.explode = true
+                this.tally = 0
+                this.frameX = 0
+                this.frameY = 1
+                //this.resetPosition()
+            }
+            return true
+        }
+    }
+}
+function addAsteroid () {asteroidArray.push(new Asteroid(maxAsteroidSpeed))}
 // Asteroid Code //////////////////////////////////////////////////////////////////////////////////////
 
 // Collectible Code /////////////////////////////////////////////////////////////////////////////////
 class Collectible {
     constructor() {
+        this.frameX = 0
+        this.frameY = 0
+        this.frameDuration = 1
+        this.tally = 0
+
+        this.height = 55
+        this.width = 36
+
         this.size = 50
         this.speed = 150 // * 10 + 1
         this.angle = Math.random() * 360
@@ -113,17 +162,28 @@ class Collectible {
         ctx.save()
         ctx.translate(this.x,this.y)
         ctx.rotate(this.angle * Math.PI/360 * this.spin)
-        ctx.drawImage(collectibleImage, 0 - this.size/2, 0- this.size/2, this.size, this.size)
+        ctx.drawImage(collectibleImage, this.width*this.frameX, this.height*this.frameY, 
+            this.width, this.height, 0 - this.width/2, 0 - this.height/2, this.width, this.height)
+        // ctx.drawImage(collectibleImage, 0 - this.size/2, 0- this.size/2, this.size, this.size)
         ctx.restore()
     }
     update(modifier){
-        this.angle += 10
-        if(this.y - this.size > canvas.height || collectibleCollision()){
-            this.y = 0 - this.size
-            this.x = Math.random() * canvas.width
-            // this.speed = Math.random() * 500 + 100 // * 10 + 1
+        if (!player.explode){
+            this.angle += 5
+            if(this.y - this.size > canvas.height || collectibleCollision()){
+                this.y = 0 - this.size
+                this.x = Math.random() * canvas.width
+                // this.speed = Math.random() * 500 + 100 // * 10 + 1
+            }
+            this.y += this.speed*modifier
+
+            this.tally += modifier
+            if (this.tally > this.frameDuration) {
+                if (this.frameX === 0) this.frameX++
+                else this.frameX = 0
+                this.tally = 0
+            }
         }
-        this.y += this.speed*modifier
     }
 }
 //COLLECTIBLE PICKUP
@@ -148,14 +208,14 @@ class Player {
     constructor(){
         // this.width = "72"
         // this.height = "100"
-        this.width = "36"
-        this.height = "78"
+        this.width = 36
+        this.height = 78
         this.frameX = 0
         this.frameY = 0
 
         this.x = canvas.width / 2 + .01450000000006 // Works?????
 	    this.y = canvas.height / 2 + .01450000000006
-        this.topSpeed = 250
+        this.topSpeed = 275
         this.speedIncrease = 10
         this.speedLoss = 1
         this.speedX = 0
@@ -167,7 +227,8 @@ class Player {
 
         this.tally = 0
         this.shoot = false
-        this.shootTimer = 1
+        this.shootAnimationTimer = 0.5
+        this.shootDelay = 1
         this.explode = false
     }
     draw(){
@@ -183,6 +244,15 @@ class Player {
     }
     update(modifier){
         this.tally += modifier
+        for (let i=0;i<asteroidArray.length;i++){
+            if (this.angle === 180 || this.angle === 630) { //Maybe uneccesary?
+                if (asteroidArray[i].asteroidCollision(this.x, this.y, this.height, this.width, "player")) this.explode = true
+            }
+            else {
+                if (asteroidArray[i].asteroidCollision(this.x, this.y, this.width, this.height, "player")) this.explode = true
+            }
+            
+        }
 
         //Exploding Check
         if(this.explode === true) {
@@ -279,23 +349,19 @@ class Player {
             if (this.speedX < 0 && this.x > (this.width/2)) this.x += this.speedX*modifier
             if (this.speedX > 0 && this.x < canvas.width - (this.width/2)) this.x += this.speedX*modifier
 
-                    //SPRITE UPDATE ON ACTION
-            //Idle
-            // console.log(this.action)
-
+            //SPRITE UPDATE (And shooting trigger)
             //Shooting?
-            if (shoot in keysDown && this.shootTimer < this.tally) {
+            if (shoot in keysDown && this.shootDelay < this.tally) {
+                $(shootSound).prop('currentTime',0)
                 $(shootSound).trigger('play')
+                bulletArray.push(new Bullet(this.x,this.y,this.angle))
                 this.shoot = true
                 this.tally = 0
             }
-
-            if (this.shoot) {
-                if(this.shootTimer < this.tally) this.shoot = false
-            }
+            if(this.shoot && this.shootDelay < this.tally) this.shoot = false    
 
             if (this.move) {
-                this.frameY = this.shoot ? 1 : 2 
+                this.frameY = this.shoot && this.tally < 0.5 ? 1 : 2 
 
                 //Engine Start
                 if (this.frameX < 3) this.frameX++
@@ -307,7 +373,7 @@ class Player {
 
             //Idle
             else if (this.move === false) {
-                if (this.shoot === false) this.frameX = this.frameY = 0 //Idle Shooting
+                if (this.shoot === false || this.tally > 0.5) this.frameX = this.frameY = 0 //Idle Shooting
                 else {
                     this.frameX = 1
                     this.frameY = 0 
@@ -316,35 +382,83 @@ class Player {
         }
     }
 }
+
 class Bullet {
-    constructor() {
-        this.width = "36"
-        this.height = "78"
+    constructor(x,y,angle) {
+        this.width = 30
+        this.height = 17.4
+        this.speed = 400
+        this.angle = angle //0 90 180 270 360 450 540 630
 
-        // this.size = 50
-        this.speed = 300
-        this.angle = player.angle
-
-        this.x = player.x
-        this.y = player.y
+        if (angle === 0) { //Top 
+            this.x = x
+            this.y = y - 30
+            this.speedX = 0
+            this.speedY = -this.speed
+        }
+        if (angle === 90) { //Top Right
+            this.x = x + 15
+            this.y = y - 15
+            this.speedX = this.speed
+            this.speedY = -this.speed
+        }
+        if (angle === 180) { //Right
+            this.x = x + 30
+            this.y = y
+            this.speedX = this.speed
+            this.speedY = 0
+        }
+        if (angle === 270) { //Bottom Right
+            this.x = x + 15
+            this.y = y + 15
+            this.speedX = this.speed
+            this.speedY = this.speed
+        }
+        if (angle === 360) { //Bottom
+            this.x = x
+            this.y = y + 30
+            this.speedX = 0
+            this.speedY = this.speed
+        }
+        if (angle === 450) { //Bottom Left
+            this.x = x - 15
+            this.y = y + 15
+            this.speedX = -this.speed
+            this.speedY = this.speed
+        }
+        if (angle === 540) { //Left
+            this.x = x - 15
+            this.y = y
+            this.speedX = -this.speed
+            this.speedY = 0
+        }
+        if (angle === 630) { //Top Left
+            this.x = x - 15
+            this.y = y - 15
+            this.speedX = -this.speed
+            this.speedY = -this.speed
+        }
     }
     draw(){
         ctx.save()
         ctx.translate(this.x,this.y)
         ctx.rotate(this.angle * Math.PI/360)
-        ctx.drawImage(collectibleImage, 0 - this.size/2, 0- this.size/2, this.size, this.size)
+        ctx.drawImage(bulletImage, -this.width/2, -this.height/2, this.width, this.height)
         ctx.restore()
     }
     update(modifier){
-        if(this.y + this.height < canvas.height||
-           this.y - this.height > canvas.height||
-           this.x + this.width < canvas.width||
-           this.x - this.width > canvas.width){
-            this.y = 0 - this.size
-            this.x = Math.random() * canvas.width
+        if (this.y < -this.height || this.y - this.height > canvas.height ||
+            this.x < -this.width || this.x - this.width > canvas.width) return true //Remove if out of bounds
+        
+            console.log(this.x,this.y,this.width-8,this.height)
+        for (let i=0;i<asteroidArray.length;i++) { //Hit once and disappear
+            if (asteroidArray[i].asteroidCollision(this.x, this.y, this.width-8, this.height, "bullet") && this.width > 0) this.width = 0 
         }
-        this.y += this.speed*modifier
+
+        this.y += this.speedY*modifier
+        this.x += this.speedX*modifier
     }
+
 }
 
 // Handle keyboard controls
@@ -387,7 +501,7 @@ let bgImage = new Image(); bgImage.src = "images/background.png"
 let gameState, time, collected, difficulty, maxAsteroidSpeed //Game Specific
 let asteroidFieldImage1, asteroidFieldImage2, asteroidFieldImage3, asteroidFieldImage4//Animated Background
 let asteroidImage, collectibleImage, playerImage//Images
-let asteroidArray, collectible, player, asteroidFieldBackground1, asteroidFieldBackground2//Objects
+let asteroidArray, collectible, player, bulletArray, asteroidFieldBackground1, asteroidFieldBackground2//Objects
 
 //Score Keeping
 let scoreArray = []
@@ -422,15 +536,21 @@ function startGame (gameDifficulty, asteroidSpeed) {
 
     //Asteroids
     asteroidImage = new Image()
-    asteroidImage.src = "images/asteroids/asteroidSpriteSheet.png"
+    asteroidImage.src = "images/asteroids/asteroidSpriteSheet2.png"
     asteroidArray = new Array
     for (let i=0;i<5;i++) addAsteroid(maxAsteroidSpeed) //Creating Asteroids
 
     //LifePods
     collected = 0
     collectibleImage = new Image()
-    collectibleImage.src = "images/placeholderCollectible.jpg" //CHANGE TO PNG !!!!!!!!!!!!!!!!!
+    collectibleImage.src = "images/lifepodSpriteSheet.png" //CHANGE TO PNG !!!!!!!!!!!!!!!!!
     collectible = new Collectible ()
+
+    //Bullet Control
+    // bulletController = new BulletController ()
+    bulletImage = new Image()
+    bulletImage.src = "images/bullet.png"//test_image.png"
+    bulletArray = new Array
 
     //Player
     playerImage = new Image()
@@ -473,6 +593,15 @@ function render (delta) {
     player.update(delta / 1000)
     player.draw()
 
+    //Bullet Control
+    let remove = -1
+    for (let i=0;i<bulletArray.length;i++) {
+        // bulletArray[i].update(delta / 1000)
+        if (bulletArray[i].update(delta / 1000)) remove = i
+        bulletArray[i].draw()
+    }
+    if (remove > -1) bulletArray.splice(remove,1)
+    
     //Score Counter Drawing
     ctx.fillStyle = "rgb(250, 250, 250)";
     ctx.font = "24px Helvetica";
