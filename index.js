@@ -145,7 +145,9 @@ class Collectible {
         this.frameX = 0
         this.frameY = 0
         this.frameDuration = 1
+        this.explodeFrameDuration = 0.5
         this.tally = 0
+        this.explode = false
 
         this.height = 55
         this.width = 36
@@ -169,21 +171,40 @@ class Collectible {
     }
     update(modifier){
         if (!player.explode){
-            this.angle += 5
-            if(this.y - this.size > canvas.height || collectibleCollision()){
-                this.y = 0 - this.size
-                this.x = Math.random() * canvas.width
-                // this.speed = Math.random() * 500 + 100 // * 10 + 1
-            }
-            this.y += this.speed*modifier
-
             this.tally += modifier
-            if (this.tally > this.frameDuration) {
-                if (this.frameX === 0) this.frameX++
-                else this.frameX = 0
-                this.tally = 0
+            if (!this.explode) collectibleShot()
+            if (!this.explode) {
+                this.angle += 5
+                if(this.y - this.size > canvas.height || collectibleCollision()) this.resetPosition()
+                this.y += this.speed*modifier
+    
+                if (this.tally > this.frameDuration) {
+                    if (this.frameX === 0) this.frameX++
+                    else this.frameX = 0
+                    this.tally = 0
+                }
+            }
+            else {
+                if (this.frameX < 3) {
+                    if (this.tally > this.explodeFrameDuration) {
+                        this.frameX++
+                        this.tally = 0
+                    }
+                }
+                else {
+                    this.explode = false
+                    this.frameX = 0
+                    this.frameY = 0
+                    this.height = 55
+                    this.width = 36
+                    this.resetPosition()
+                }
             }
         }
+    }
+    resetPosition(){
+        this.y = 0 - this.size
+        this.x = Math.random() * canvas.width
     }
 }
 //COLLECTIBLE PICKUP
@@ -199,6 +220,27 @@ function collectibleCollision(){ //Include negation for player?
         addAsteroid()
         collected++
         return true
+    }    
+}
+function collectibleShot(){
+    for (let i=0;i<bulletArray.length;i++){
+        if(
+            bulletArray[i].x + bulletArray[i].width/2 >= collectible.x &&
+            bulletArray[i].x <= collectible.x + (collectible.size) &&
+            bulletArray[i].y + bulletArray[i].height/2 >= collectible.y &&
+            bulletArray[i].y <= collectible.y + (collectible.size) && 
+            bulletArray[i].width > 0
+        ) {
+            $(asteroidExplosionSound).prop('currentTime',0)
+            $(asteroidExplosionSound).trigger('play')
+            bulletArray[i].width = 0
+            collectible.explode = true
+            collectible.frameY = 1
+            collectible.frameX = 0
+            collectible.width = collectible.height = 72
+            collectible.tally = 0
+            collected--
+        }
     }
 }
 // Collectible Code /////////////////////////////////////////////////////////////////////////////////
@@ -496,7 +538,7 @@ $(".difficultyButton").click(()=>{$(gameStartSound).trigger('play')})
 // Background image
 let canvas = document.getElementById("gameCanvas"); canvas.width = 900; canvas.height = 900
 let ctx = canvas.getContext("2d")
-let bgImage = new Image(); bgImage.src = "images/background.png"
+let bgImage = new Image(); bgImage.src = "images/background/background.png"
 
 let gameState, time, collected, difficulty, maxAsteroidSpeed //Game Specific
 let asteroidFieldImage1, asteroidFieldImage2, asteroidFieldImage3, asteroidFieldImage4//Animated Background
@@ -527,7 +569,7 @@ function startGame (gameDifficulty, asteroidSpeed) {
     
     //Asteroid Background
     asteroidFieldImage = new Image()
-    asteroidFieldImage.src = "images/asteroidFieldBackgroundImage3.png"
+    asteroidFieldImage.src = "images/background/asteroidFieldBackgroundImage3.png"
     
     asteroidField1 = new AsteroidField (0, 0, 0-canvas.height, 10)
     asteroidField2 = new AsteroidField (0, 1, 0, 10)
@@ -543,7 +585,7 @@ function startGame (gameDifficulty, asteroidSpeed) {
     //LifePods
     collected = 0
     collectibleImage = new Image()
-    collectibleImage.src = "images/lifepodSpriteSheet.png" //CHANGE TO PNG !!!!!!!!!!!!!!!!!
+    collectibleImage.src = "images/lifepod/lifepodSpriteSheet.png" //CHANGE TO PNG !!!!!!!!!!!!!!!!!
     collectible = new Collectible ()
 
     //Bullet Control
