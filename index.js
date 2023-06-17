@@ -69,7 +69,7 @@ class Asteroid {
         if (!player.explode){
             //If Asteroid Not Shot
             if (!this.explode) {
-                this.angle += 10
+                this.angle += 3
                 if(this.y - this.size/2 > canvas.height) this.resetPosition()
                 this.y += this.speed*modifier
     
