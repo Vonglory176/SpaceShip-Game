@@ -69,7 +69,7 @@ class Asteroid {
         if (!player.explode){
             //If Asteroid Not Shot
             if (!this.explode) {
-                this.angle += 10
+                this.angle += 3
                 if(this.y - this.size/2 > canvas.height) this.resetPosition()
                 this.y += this.speed*modifier
     
@@ -102,36 +102,65 @@ class Asteroid {
     asteroidCollision(rx, ry, rw, rh, objectType) { //cx, cy, radius, 
         // function collisionDetection() {
         // temporary variables to set edges for testing
-        let cx = this.x
-        let cy = this.y
-        let radius = this.size*0.5
+        // let cx = this.x
+        // let cy = this.y
+        // let radius = this.size/2
 
-        let testX = cx;
-        let testY = cy;
+        // let testX = cx;
+        // let testY = cy;
         
-        // which edge is closest?
-        if (cx < rx)         testX = rx;      // test left edge
-        else if (cx > rx+rw) testX = rx+rw;   // right edge
-        if (cy < ry)         testY = ry;      // top edge
-        else if (cy > ry+rh) testY = ry+rh;   // bottom edge
+        // // which edge is closest?
+        // if (cx < rx)         testX = rx  // test left edge
+        // else if (cx > rx+rw) testX = rx/2;//2??   // right edge
+        // if (cy < ry)         testY = ry  // top edge
+        // else if (cy > ry+rh) testY = ry/2;//2??   // bottom edge
         
-        // get distance from closest edges
-        let distX = cx-testX;
-        let distY = cy-testY;
-        let distance = Math.sqrt( (distX*distX) + (distY*distY) );
+        // // get distance from closest edges
+        // let distX = cx-testX;
+        // let distY = cy-testY;
+        // let distance = Math.sqrt( (distX*distX) + (distY*distY) );
         
-        // if the distance is less than the radius, collision!
-        if (distance <= radius && !this.explode) {
-            if (objectType === "bullet" && rw > 0) {
-                $(asteroidExplosionSound).prop('currentTime',0)
-                $(asteroidExplosionSound).trigger('play')
-                //ADD EXPLOSION SPRITE
-                this.explode = true
-                this.tally = 0
-                this.frameX = 0
-                this.frameY = 1
-                //this.resetPosition()
-            }
+        // // if the distance is less than the radius, collision!
+        // if (distance <= radius && !this.explode) {
+        //     if (objectType === "bullet" && rw > 0) {
+        //         $(asteroidExplosionSound).prop('currentTime',0)
+        //         $(asteroidExplosionSound).trigger('play')
+        //         //ADD EXPLOSION SPRITE
+        //         this.explode = true
+        //         this.tally = 0
+        //         this.frameX = 0
+        //         this.frameY = 1
+        //         //this.resetPosition()
+        //     }
+        //     return true
+        // }
+
+        if(
+            objectType !== "bullet" &&
+            player.x + player.width/2 >= this.x &&
+            player.x <= this.x + (this.size*0.6) &&
+            player.y + player.height*0.6 >= this.y &&
+            player.y <= this.y + (this.size*0.6) &&
+            !this.explode
+        ) {
+            return true
+        } 
+        else if (
+            objectType === "bullet" &&
+            rx + rw >= this.x &&
+            rx <= this.x + (this.size*0.6) &&
+            ry + rh >= this.y &&
+            ry <= this.y + (this.size*0.6) &&
+            !this.explode
+        ) {
+            $(asteroidExplosionSound).prop('currentTime',0)
+            $(asteroidExplosionSound).trigger('play')
+            //ADD EXPLOSION SPRITE
+            this.explode = true
+            this.tally = 0
+            this.frameX = 0
+            this.frameY = 1
+            //this.resetPosition()
             return true
         }
     }
@@ -216,6 +245,7 @@ function collectibleCollision(){ //Include negation for player?
         player.y <= collectible.y + (collectible.size)&&
         !player.explode
     ) {
+        $(collectedPodSound).prop('currentTime',0)
         $(collectedPodSound).trigger('play')
         addAsteroid()
         collected++
@@ -287,12 +317,12 @@ class Player {
     update(modifier){
         this.tally += modifier
         for (let i=0;i<asteroidArray.length;i++){
-            if (this.angle === 180 || this.angle === 630) { //Maybe uneccesary?
-                if (asteroidArray[i].asteroidCollision(this.x, this.y, this.height, this.width, "player")) this.explode = true
-            }
-            else {
+            // if (this.angle === 180 || this.angle === 630) { //Maybe uneccesary?
+            //     if (asteroidArray[i].asteroidCollision(this.x, this.y, this.height, this.width, "player")) this.explode = true
+            // }
+            // else {
                 if (asteroidArray[i].asteroidCollision(this.x, this.y, this.width, this.height, "player")) this.explode = true
-            }
+            //}
             
         }
 
@@ -489,16 +519,18 @@ class Bullet {
         ctx.restore()
     }
     update(modifier){
-        if (this.y < -this.height || this.y - this.height > canvas.height ||
-            this.x < -this.width || this.x - this.width > canvas.width) return true //Remove if out of bounds
-        
-            console.log(this.x,this.y,this.width-8,this.height)
-        for (let i=0;i<asteroidArray.length;i++) { //Hit once and disappear
-            if (asteroidArray[i].asteroidCollision(this.x, this.y, this.width-8, this.height, "bullet") && this.width > 0) this.width = 0 
+        if (!player.explode){
+            if (this.y < -this.height || this.y - this.height > canvas.height ||
+                this.x < -this.width || this.x - this.width > canvas.width) return true //Remove if out of bounds
+            
+                console.log(this.x,this.y,this.width-8,this.height)
+            for (let i=0;i<asteroidArray.length;i++) { //Hit once and disappear
+                if (asteroidArray[i].asteroidCollision(this.x, this.y, this.width-8, this.height, "bullet") && this.width > 0) this.width = 0 
+            }
+    
+            this.y += this.speedY*modifier
+            this.x += this.speedX*modifier
         }
-
-        this.y += this.speedY*modifier
-        this.x += this.speedX*modifier
     }
 
 }
