@@ -102,26 +102,46 @@ class Asteroid {
     asteroidCollision(rx, ry, rw, rh, objectType) { //cx, cy, radius, 
         // function collisionDetection() {
         // temporary variables to set edges for testing
-        let cx = this.x
-        let cy = this.y
-        let radius = this.size*0.5
+        // let cx = this.x
+        // let cy = this.y
+        // let radius = this.size/2
 
-        let testX = cx;
-        let testY = cy;
+        // let testX = cx;
+        // let testY = cy;
         
-        // which edge is closest?
-        if (cx < rx)         testX = rx;      // test left edge
-        else if (cx > rx+rw) testX = rx+rw;   // right edge
-        if (cy < ry)         testY = ry;      // top edge
-        else if (cy > ry+rh) testY = ry+rh;   // bottom edge
+        // // which edge is closest?
+        // if (cx < rx)         testX = rx  // test left edge
+        // else if (cx > rx+rw) testX = rx/2;//2??   // right edge
+        // if (cy < ry)         testY = ry  // top edge
+        // else if (cy > ry+rh) testY = ry/2;//2??   // bottom edge
         
-        // get distance from closest edges
-        let distX = cx-testX;
-        let distY = cy-testY;
-        let distance = Math.sqrt( (distX*distX) + (distY*distY) );
+        // // get distance from closest edges
+        // let distX = cx-testX;
+        // let distY = cy-testY;
+        // let distance = Math.sqrt( (distX*distX) + (distY*distY) );
         
-        // if the distance is less than the radius, collision!
-        if (distance <= radius && !this.explode) {
+        // // if the distance is less than the radius, collision!
+        // if (distance <= radius && !this.explode) {
+        //     if (objectType === "bullet" && rw > 0) {
+        //         $(asteroidExplosionSound).prop('currentTime',0)
+        //         $(asteroidExplosionSound).trigger('play')
+        //         //ADD EXPLOSION SPRITE
+        //         this.explode = true
+        //         this.tally = 0
+        //         this.frameX = 0
+        //         this.frameY = 1
+        //         //this.resetPosition()
+        //     }
+        //     return true
+        // }
+
+        if(
+            player.x + player.width/2 >= this.x &&
+            player.x <= this.x + (this.size*0.6) &&
+            player.y + player.height*0.6 >= this.y &&
+            player.y <= this.y + (this.size*0.6) &&
+            !this.explode
+        ) {
             if (objectType === "bullet" && rw > 0) {
                 $(asteroidExplosionSound).prop('currentTime',0)
                 $(asteroidExplosionSound).trigger('play')
@@ -133,7 +153,7 @@ class Asteroid {
                 //this.resetPosition()
             }
             return true
-        }
+        }  
     }
 }
 function addAsteroid () {asteroidArray.push(new Asteroid(maxAsteroidSpeed))}
