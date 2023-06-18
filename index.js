@@ -550,7 +550,7 @@ let buttonClickSound = new Audio('sounds/ButtonClick.wav'); buttonClickSound.vol
 let buttonHoverSound = new Audio('sounds/ButtonHover.wav'); buttonHoverSound.volume=0.5
 
 let thrusterSound = new Audio('sounds/Thruster.mp3'); thrusterSound.volume=0.9
-let collectedPodSound = new Audio('sounds/collectedPod.wav'); collectedPodSound.volume=0.5
+let collectedPodSound = new Audio('sounds/CollectedPod.wav'); collectedPodSound.volume=0.5
 let shootSound = new Audio('sounds/Shoot.wav'); shootSound.volume=0.5
 let asteroidExplosionSound = new Audio('sounds/AsteroidExplosion.wav'); asteroidExplosionSound.volume=0.5
 
