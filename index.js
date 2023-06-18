@@ -135,25 +135,33 @@ class Asteroid {
         //     return true
         // }
 
-        if(
+                if(
+            objectType !== "bullet" &&
             player.x + player.width/2 >= this.x &&
             player.x <= this.x + (this.size*0.6) &&
             player.y + player.height*0.6 >= this.y &&
             player.y <= this.y + (this.size*0.6) &&
             !this.explode
         ) {
-            if (objectType === "bullet" && rw > 0) {
-                $(asteroidExplosionSound).prop('currentTime',0)
-                $(asteroidExplosionSound).trigger('play')
-                //ADD EXPLOSION SPRITE
-                this.explode = true
-                this.tally = 0
-                this.frameX = 0
-                this.frameY = 1
-                //this.resetPosition()
-            }
             return true
-        }  
+        } 
+        else if (
+            rx + rw >= this.x &&
+            rx <= this.x + (this.size*0.6) &&
+            ry + rh >= this.y &&
+            ry <= this.y + (this.size*0.6) &&
+            !this.explode
+        ) {
+            $(asteroidExplosionSound).prop('currentTime',0)
+            $(asteroidExplosionSound).trigger('play')
+            //ADD EXPLOSION SPRITE
+            this.explode = true
+            this.tally = 0
+            this.frameX = 0
+            this.frameY = 1
+            //this.resetPosition()
+            return true
+        }
     }
 }
 function addAsteroid () {asteroidArray.push(new Asteroid(maxAsteroidSpeed))}
