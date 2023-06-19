@@ -137,9 +137,9 @@ class Asteroid {
 
         if(
             objectType !== "bullet" &&
-            player.x + player.width/2 >= this.x &&
+            player.x + player.width >= this.x &&
             player.x <= this.x + (this.size*0.6) &&
-            player.y + player.height*0.6 >= this.y &&
+            player.y + player.height >= this.y &&
             player.y <= this.y + (this.size*0.6) &&
             !this.explode
         ) {
@@ -524,8 +524,10 @@ class Bullet {
                 this.x < -this.width || this.x - this.width > canvas.width) return true //Remove if out of bounds
             
                 console.log(this.x,this.y,this.width-8,this.height)
-            for (let i=0;i<asteroidArray.length;i++) { //Hit once and disappear
-                if (asteroidArray[i].asteroidCollision(this.x, this.y, this.width-8, this.height, "bullet") && this.width > 0) this.width = 0 
+            if (this.width > 0) {
+                for (let i=0;i<asteroidArray.length;i++) { //Hit once and disappear
+                    if (asteroidArray[i].asteroidCollision(this.x, this.y, this.width-8, this.height, "bullet")) this.width = 0 
+                }
             }
     
             this.y += this.speedY*modifier
@@ -541,22 +543,28 @@ addEventListener("keydown", function (e) { keysDown[e.keyCode] = true; }, false)
 addEventListener("keyup", function (e) { delete keysDown[e.keyCode]; }, false);
 // Player Code //////////////////////////////////////////////////////////////////////////////////////
 
-// Audio Code //////////////////////////////////////////////////////////////////////////////////////
-let gameStartSound = new Audio('sounds/GameStart.wav'); gameStartSound.volume=0.5 //Maybe use instead?
-let gameMusic = new Audio('sounds/GameMusic.wav'); gameMusic.volume=0.3
-let gameOverSound = new Audio('sounds/GameOver.wav'); gameOverSound.volume=0.5
+// Asset Code //////////////////////////////////////////////////////////////////////////////////////
+let loadProgress = 0
+function loading () {
 
-let buttonClickSound = new Audio('sounds/ButtonClick.wav'); buttonClickSound.volume=0.5
-let buttonHoverSound = new Audio('sounds/ButtonHover.wav'); buttonHoverSound.volume=0.5
+}
 
-let thrusterSound = new Audio('sounds/Thruster.mp3'); thrusterSound.volume=0.9
-let collectedPodSound = new Audio('sounds/CollectedPod.wav'); collectedPodSound.volume=0.5
-let shootSound = new Audio('sounds/Shoot.wav'); shootSound.volume=0.5
-let asteroidExplosionSound = new Audio('sounds/AsteroidExplosion.wav'); asteroidExplosionSound.volume=0.5
+// Audio ////
+let gameStartSound = new Audio('sounds/GameStart.wav'); gameStartSound.volume=0.5;// gameStartSound.onload = () => {loadProgress += 1}
+let gameMusic = new Audio('sounds/GameMusic.wav'); gameMusic.volume=0.3;// gameMusic.onload = () => {loadProgress += 1}
+let gameOverSound = new Audio('sounds/GameOver.wav'); gameOverSound.volume=0.5;// gameOverSound.onload = () => {loadProgress += 1}
 
-let collisionSound = new Audio('sounds/AsteroidCollision.wav'); collisionSound.volume=0.5
-let electricitySound = new Audio('sounds/Electricity.wav'); electricitySound.volume=0.5
-let explosionSound = new Audio('sounds/Explosion.wav'); explosionSound.volume=0.5
+let buttonClickSound = new Audio('sounds/ButtonClick.wav'); buttonClickSound.volume=0.5;// buttonClickSound.onload = () => {loadProgress += 1}
+let buttonHoverSound = new Audio('sounds/ButtonHover.wav'); buttonHoverSound.volume=0.5;// buttonHoverSound.onload = () => {loadProgress += 1}
+
+let thrusterSound = new Audio('sounds/Thruster.mp3'); thrusterSound.volume=0.9;// thrusterSound.onload = () => {loadProgress += 1}
+let collectedPodSound = new Audio('sounds/CollectedPod.wav'); collectedPodSound.volume=0.5;// collectedPodSound.onload = () => {loadProgress += 1}
+let shootSound = new Audio('sounds/Shoot.wav'); shootSound.volume=0.5;// shootSound.onload = () => {loadProgress += 1}
+let asteroidExplosionSound = new Audio('sounds/AsteroidExplosion.wav'); asteroidExplosionSound.volume=0.5;// asteroidExplosionSound.onload = () => {loadProgress += 1}
+
+let collisionSound = new Audio('sounds/AsteroidCollision.wav'); collisionSound.volume=0.5;// collisionSound.onload = () => {loadProgress += 1}
+let electricitySound = new Audio('sounds/Electricity.wav'); electricitySound.volume=0.5;// electricitySound.onload = () => {loadProgress += 1}
+let explosionSound = new Audio('sounds/Explosion.wav'); explosionSound.volume=0.5;// explosionSound.onload = () => {loadProgress += 1}
 
 $("button").mouseenter(()=>{
     $(buttonHoverSound).prop('currentTime',0)
@@ -564,18 +572,41 @@ $("button").mouseenter(()=>{
 })
 $("#submitButton").click(()=>{$(buttonClickSound).trigger('play')})
 $(".difficultyButton").click(()=>{$(gameStartSound).trigger('play')})
-// Audio Code //////////////////////////////////////////////////////////////////////////////////////
+
+// Images ////
+let bgImage = new Image(); bgImage.onload = () => {loadProgress += 1}
+bgImage.src = "images/background/background.png"
+
+let asteroidFieldImage = new Image(); asteroidFieldImage.onload = () => {loadProgress += 1}
+asteroidFieldImage.src = "images/background/asteroidFieldBackgroundImage3.png"
+
+let asteroidImage = new Image(); asteroidImage.onload = () => {loadProgress += 1}
+asteroidImage.src = "images/asteroids/asteroidSpriteSheet2.png"
+
+let collectibleImage = new Image(); collectibleImage.onload = () => {loadProgress += 1}
+collectibleImage.src = "images/lifepod/lifepodSpriteSheet.png"
+
+let bulletImage = new Image(); bulletImage.onload = () => {loadProgress += 1}
+bulletImage.src = "images/bullet.png"
+
+let playerImage = new Image(); playerImage.onload = () => {loadProgress += 1}
+playerImage.src = "images/spaceship/spaceShipSpriteSheet5.png"
+// Asset Code //////////////////////////////////////////////////////////////////////////////////////
 
 // General Code //////////////////////////////////////////////////////////////////////////////////////
-// Background image
+// Cross-browser support for requestAnimationFrame
+let w = window;
+requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
+
+//Background
 let canvas = document.getElementById("gameCanvas"); canvas.width = 900; canvas.height = 900
 let ctx = canvas.getContext("2d")
-let bgImage = new Image(); bgImage.src = "images/background/background.png"
 
-let gameState, time, collected, difficulty, maxAsteroidSpeed //Game Specific
-let asteroidFieldImage1, asteroidFieldImage2, asteroidFieldImage3, asteroidFieldImage4//Animated Background
-let asteroidImage, collectibleImage, playerImage//Images
-let asteroidArray, collectible, player, bulletArray, asteroidFieldBackground1, asteroidFieldBackground2//Objects
+//Game Specific
+let gameState, time, collected, difficulty, maxAsteroidSpeed
+
+//Objects
+let asteroidArray, collectible, player, bulletArray, asteroidField1, asteroidField2, asteroidField3, asteroidField4
 
 //Score Keeping
 let scoreArray = []
@@ -591,49 +622,40 @@ $("#playButtonNormal").click(() => {startGame(2, 500)}) //Second Value is Astero
 $("#playButtonHard").click(() => {startGame(3, 600)})
 
 function startGame (gameDifficulty, asteroidSpeed) {
-    $("#startScreen").css("display", "none")
-    $("#gameCanvas").css("display", "block")
-
-    //Game
-    difficulty = gameDifficulty
-    maxAsteroidSpeed = asteroidSpeed
-    time = null
+    if (loadProgress === 6) {
+        $("#startScreen").css("display", "none")
+        $("#gameCanvas").css("display", "block")
     
-    //Asteroid Background
-    asteroidFieldImage = new Image()
-    asteroidFieldImage.src = "images/background/asteroidFieldBackgroundImage3.png"
+        //Game
+        difficulty = gameDifficulty
+        maxAsteroidSpeed = asteroidSpeed
+        time = null
+        
+        //Asteroid Background    
+        asteroidField1 = new AsteroidField (0, 0, 0-canvas.height, 10)
+        asteroidField2 = new AsteroidField (0, 1, 0, 10)
+        asteroidField3 = new AsteroidField (1, 0, 0 -canvas.height, 40)
+        asteroidField4 = new AsteroidField (1, 1, 0, 40)
     
-    asteroidField1 = new AsteroidField (0, 0, 0-canvas.height, 10)
-    asteroidField2 = new AsteroidField (0, 1, 0, 10)
-    asteroidField3 = new AsteroidField (1, 0, 0 -canvas.height, 40)
-    asteroidField4 = new AsteroidField (1, 1, 0, 40)
-
-    //Asteroids
-    asteroidImage = new Image()
-    asteroidImage.src = "images/asteroids/asteroidSpriteSheet2.png"
-    asteroidArray = new Array
-    for (let i=0;i<5;i++) addAsteroid(maxAsteroidSpeed) //Creating Asteroids
-
-    //LifePods
-    collected = 0
-    collectibleImage = new Image()
-    collectibleImage.src = "images/lifepod/lifepodSpriteSheet.png" //CHANGE TO PNG !!!!!!!!!!!!!!!!!
-    collectible = new Collectible ()
-
-    //Bullet Control
-    // bulletController = new BulletController ()
-    bulletImage = new Image()
-    bulletImage.src = "images/bullet.png"//test_image.png"
-    bulletArray = new Array
-
-    //Player
-    playerImage = new Image()
-    playerImage.src = "images/spaceship/spaceShipSpriteSheet5.png"
-    player = new Player()
-
-    //Start Game
-    gameState = true
-    requestAnimationFrame(main)
+        //Asteroids
+        asteroidArray = new Array
+        for (let i=0;i<5;i++) addAsteroid(maxAsteroidSpeed) //Creating Asteroids
+    
+        //LifePods
+        collected = 0
+        collectible = new Collectible ()
+    
+        //Bullet Control
+        bulletArray = new Array
+    
+        //Player
+        player = new Player()
+    
+        //Start Game
+        gameState = true
+        requestAnimationFrame(main)
+    }
+    else alert(`Game is still loading, please try again in a moment! Progress: ${(loadProgress/6)*100}%`)
 }
 
 
