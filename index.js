@@ -545,9 +545,6 @@ addEventListener("keyup", function (e) { delete keysDown[e.keyCode]; }, false);
 
 // Asset Code //////////////////////////////////////////////////////////////////////////////////////
 let loadProgress = 0
-function loading () {
-
-}
 
 // Audio ////
 let gameStartSound = new Audio('sounds/GameStart.wav'); gameStartSound.volume=0.5;// gameStartSound.onload = () => {loadProgress += 1}
@@ -639,7 +636,7 @@ function startGame (gameDifficulty, asteroidSpeed) {
     
         //Asteroids
         asteroidArray = new Array
-        for (let i=0;i<5;i++) addAsteroid(maxAsteroidSpeed) //Creating Asteroids
+        for (let i=0;i<4+gameDifficulty;i++) addAsteroid(maxAsteroidSpeed) //Creating Asteroids
     
         //LifePods
         collected = 0
