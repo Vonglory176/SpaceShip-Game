@@ -618,7 +618,7 @@ function score (initials) {
 
 // GAME START / RESET
 $("#playButtonEasy").click(() => {startGame(1, 200)})
-$("#playButtonNormal").click(() => {startGame(2, 500)}) //Second Value is AsteroidMaxSpeed
+$("#playButtonNormal").click(() => {startGame(2, 400)}) //Second Value is AsteroidMaxSpeed
 $("#playButtonHard").click(() => {startGame(3, 600)})
 
 function startGame (gameDifficulty, asteroidSpeed) {
