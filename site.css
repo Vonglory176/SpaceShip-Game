@@ -3,7 +3,11 @@ body {
     /* background: url(https://i.ibb.co/87GbbFP/2799006.jpg); */
     background-repeat: no-repeat;
     background-size: cover;
-    padding-top: calc(50vh - 375px);
+    background-position: center;
+    /* padding-top: calc(50vh - 375px); */
+    height: 100vh;
+    display: flex;
+    align-items: center;
     text-align: center;
     color:white;
 }
