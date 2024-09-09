@@ -1,18 +1,18 @@
 import React, { useRef, useEffect } from 'react'
 
-const CanvasComponent = ({ width, height, startGame, gameState, assets }) => {
+const CanvasComponent = ({ width, height, startGame, gameState, getScore, assets, gameDifficulty }) => {
   const canvasRef = useRef(null)
 
   useEffect(() => {
     const canvas = canvasRef.current
-    const context = canvas.getContext('2d')
+    const ctx = canvas.getContext('2d')
 
     if (gameState === 'game' && assets) {
-      startGame(canvas, context, assets)
+      startGame(canvas, ctx, assets, gameDifficulty, getScore)
     }
-  }, [startGame, gameState, assets])
+  }, [startGame, gameState, assets, gameDifficulty, getScore])
 
-  return <canvas ref={canvasRef} width={width} height={height} />
+  return <canvas ref={canvasRef} width={width} height={height} className='w-full' />
 }
 
 export default CanvasComponent
