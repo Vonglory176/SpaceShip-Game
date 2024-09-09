@@ -1,11 +1,33 @@
 import { useState, useEffect } from 'react'
 
+// Images
+import bgImage from '../assets/images/background/background.png'
+import asteroidFieldImage from '../assets/images/background/asteroidFieldBackgroundImage3.png'
+import asteroidImage from '../assets/images/asteroids/asteroidSpriteSheet2.png'
+import collectibleImage from '../assets/images/lifepod/lifepodSpriteSheet.png'
+import bulletImage from '../assets/images/bullet.png'
+import playerImage from '../assets/images/spaceship/spaceShipSpriteSheet5.png'
+
+// Sounds
+import gameStartSound from '../assets/sounds/GameStart.wav'
+import gameMusic from '../assets/sounds/GameMusic.wav'
+import gameOverSound from '../assets/sounds/GameOver.wav'
+import buttonClickSound from '../assets/sounds/ButtonClick.wav'
+import buttonHoverSound from '../assets/sounds/ButtonHover.wav'
+import thrusterSound from '../assets/sounds/Thruster.mp3'
+import collectedPodSound from '../assets/sounds/CollectedPod.wav'
+import shootSound from '../assets/sounds/Shoot.wav'
+import asteroidExplosionSound from '../assets/sounds/AsteroidExplosion.wav'
+import collisionSound from '../assets/sounds/AsteroidCollision.wav'
+import electricitySound from '../assets/sounds/Electricity.wav'
+import explosionSound from '../assets/sounds/Explosion.wav'
+
 const useLoadAssets = () => {
   const [progress, setProgress] = useState(0)
   const [assets, setAssets] = useState(null)
 
   useEffect(() => {
-    const totalAssets = 14 // Total number of assets to load
+    const totalAssets = 18 // Total number of assets to load
     let loadedAssets = 0
 
     const updateProgress = () => {
@@ -13,99 +35,81 @@ const useLoadAssets = () => {
       setProgress((loadedAssets / totalAssets) * 100)
     }
 
-    // Audio assets
-    const gameStartSound = new Audio('sounds/GameStart.wav')
-    gameStartSound.volume = 0.5
-    gameStartSound.onloadeddata = updateProgress
+    const loadAudio = (src) => {
+      return new Promise((resolve) => {
+        const audio = new Audio(src)
+        audio.volume = 0.5
+        audio.onloadeddata = () => {
+          updateProgress()
+          resolve(audio)
+        }
+      })
+    }
 
-    const gameMusic = new Audio('sounds/GameMusic.wav')
-    gameMusic.volume = 0.3
-    gameMusic.onloadeddata = updateProgress
+    const loadImage = (src) => {
+      return new Promise((resolve) => {
+        const img = new Image()
+        img.onload = () => {
+          updateProgress()
+          resolve(img)
+        }
+        img.src = src
+      })
+    }
 
-    const gameOverSound = new Audio('sounds/GameOver.wav')
-    gameOverSound.volume = 0.5
-    gameOverSound.onloadeddata = updateProgress
+    // Load all audio assets
+    const audioAssets = Promise.all([
+      loadAudio(gameStartSound),
+      loadAudio(gameMusic),
+      loadAudio(gameOverSound),
+      loadAudio(buttonClickSound),
+      loadAudio(buttonHoverSound),
+      loadAudio(thrusterSound),
+      loadAudio(collectedPodSound),
+      loadAudio(shootSound),
+      loadAudio(asteroidExplosionSound),
+      loadAudio(collisionSound),
+      loadAudio(electricitySound),
+      loadAudio(explosionSound),
+    ])
 
-    const buttonClickSound = new Audio('sounds/ButtonClick.wav')
-    buttonClickSound.volume = 0.5
-    buttonClickSound.onloadeddata = updateProgress
+    // Load all image assets
+    const imageAssets = Promise.all([
+      loadImage(bgImage),
+      loadImage(asteroidFieldImage),
+      loadImage(asteroidImage),
+      loadImage(collectibleImage),
+      loadImage(bulletImage),
+      loadImage(playerImage),
+    ])
 
-    const buttonHoverSound = new Audio('sounds/ButtonHover.wav')
-    buttonHoverSound.volume = 0.5
-    buttonHoverSound.onloadeddata = updateProgress
-
-    const thrusterSound = new Audio('sounds/Thruster.mp3')
-    thrusterSound.volume = 0.9
-    thrusterSound.onloadeddata = updateProgress
-
-    const collectedPodSound = new Audio('sounds/CollectedPod.wav')
-    collectedPodSound.volume = 0.5
-    collectedPodSound.onloadeddata = updateProgress
-
-    const shootSound = new Audio('sounds/Shoot.wav')
-    shootSound.volume = 0.5
-    shootSound.onloadeddata = updateProgress
-
-    const asteroidExplosionSound = new Audio('sounds/AsteroidExplosion.wav')
-    asteroidExplosionSound.volume = 0.5
-    asteroidExplosionSound.onloadeddata = updateProgress
-
-    const collisionSound = new Audio('sounds/AsteroidCollision.wav')
-    collisionSound.volume = 0.5
-    collisionSound.onloadeddata = updateProgress
-
-    const electricitySound = new Audio('sounds/Electricity.wav')
-    electricitySound.volume = 0.5
-    electricitySound.onloadeddata = updateProgress
-
-    const explosionSound = new Audio('sounds/Explosion.wav')
-    explosionSound.volume = 0.5
-    explosionSound.onloadeddata = updateProgress
-
-    // Image assets
-    const bgImage = new Image()
-    bgImage.onload = updateProgress
-    bgImage.src = "images/background/background.png"
-
-    const asteroidFieldImage = new Image()
-    asteroidFieldImage.onload = updateProgress
-    asteroidFieldImage.src = "images/background/asteroidFieldBackgroundImage3.png"
-
-    const asteroidImage = new Image()
-    asteroidImage.onload = updateProgress
-    asteroidImage.src = "images/asteroids/asteroidSpriteSheet2.png"
-
-    const collectibleImage = new Image()
-    collectibleImage.onload = updateProgress
-    collectibleImage.src = "images/lifepod/lifepodSpriteSheet.png"
-
-    const bulletImage = new Image()
-    bulletImage.onload = updateProgress
-    bulletImage.src = "images/bullet.png"
-
-    const playerImage = new Image()
-    playerImage.onload = updateProgress
-    playerImage.src = "images/spaceship/spaceShipSpriteSheet5.png"
-
-    setAssets({
-      gameStartSound,
-      gameMusic,
-      gameOverSound,
-      buttonClickSound,
-      buttonHoverSound,
-      thrusterSound,
-      collectedPodSound,
-      shootSound,
-      asteroidExplosionSound,
-      collisionSound,
-      electricitySound,
-      explosionSound,
-      bgImage,
-      asteroidFieldImage,
-      asteroidImage,
-      collectibleImage,
-      bulletImage,
-      playerImage,
+    Promise.all([audioAssets, imageAssets]).then(([loadedAudioAssets, loadedImageAssets]) => {
+      setAssets({
+        sounds: {
+          gameStart: loadedAudioAssets[0],
+          gameMusic: loadedAudioAssets[1],
+          gameOver: loadedAudioAssets[2],
+          buttonClick: loadedAudioAssets[3],
+          buttonHover: loadedAudioAssets[4],
+          thruster: loadedAudioAssets[5],
+          collectedPod: loadedAudioAssets[6],
+          shoot: loadedAudioAssets[7],
+          asteroidExplosion: loadedAudioAssets[8],
+          collision: loadedAudioAssets[9],
+          electricity: loadedAudioAssets[10],
+          explosion: loadedAudioAssets[11],
+        },
+        images: {
+          background: loadedImageAssets[0],
+          asteroidField: loadedImageAssets[1],
+          asteroid: loadedImageAssets[2],
+          collectible: loadedImageAssets[3],
+          bullet: loadedImageAssets[4],
+          player: loadedImageAssets[5],
+        },
+      })
+    }).catch(error => {
+      console.error(error)
     })
   }, [])
 
