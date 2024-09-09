@@ -5,19 +5,75 @@
   padding: 0;
   margin: 0;
   box-sizing: border-box;
-}
-
-body {
-  /* background-image: linear-gradient( 99.9deg, rgba(27,24,31,1) 21.2%, rgba(50,4,89,1) 84.8% ); */
-  /* background: url(https://i.ibb.co/87GbbFP/2799006.jpg); */
-  /* padding-top: calc(50vh - 375px); */
+  scroll-behavior: smooth;
   color: white;
 }
 
-.App {
-  height: 100svh;
+:root {
+  --scrollbar-width: 12px;
+  --scrollbar-bg: rgb(31, 41, 55);
+  --scrollbar-thumb: rgb(96, 165, 250);
 }
 
+*, body, .App, main {
+  scrollbar-width: var(--scrollbar-width);
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-bg);
+}
+*::-webkit-scrollbar, body::-webkit-scrollbar, .App::-webkit-scrollbar, main::-webkit-scrollbar {
+  width: var(--scrollbar-width);
+}
+*::-webkit-scrollbar-track, body::-webkit-scrollbar-track, .App::-webkit-scrollbar-track, main::-webkit-scrollbar-track {
+  background: var(--scrollbar-bg);
+}
+*::-webkit-scrollbar-thumb, body::-webkit-scrollbar-thumb, .App::-webkit-scrollbar-thumb, main::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: 6px;
+  border: 3px solid var(--scrollbar-bg);
+}
+
+.App {
+  min-height: 100svh;
+  min-height: 100vh;
+  height: 100%;
+}
+
+#mainDisplay {
+  grid-area: main;
+}
+#mainDisplay #endScreen {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+#infoPanel {
+  grid-area: info;
+}
+
+#scorePanel {
+  grid-area: score;
+}
+
+.game-container {
+  display: grid;
+}
+
+.game-container {
+  grid-template-areas: "main" "info" "score";
+}
+
+@media (min-width: 1025px) { /* Large view */
+  .game-container {
+    grid-template-areas: "info main score";
+    grid-template-columns: 1fr 3fr 1fr;
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 @keyframes sf-fly-by-1 {
   from {
     transform: translateZ(-600px);
