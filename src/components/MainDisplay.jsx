@@ -3,21 +3,46 @@ import CanvasComponent from './CanvasComponent'
 import useGame from '../hooks/useGame'
 import useLoadAssets from '../hooks/loadAssets'
 
-const MainDisplay = () => {
+const MainDisplay = ({addScoreCallback}) => {
     const [gameState, setGameState] = useState("start")
-    const [gameDifficulty, setGameDifficulty] = useState(0)
+    const [gameDifficulty, setGameDifficulty] = useState("")
     const [finalScore, setFinalScore] = useState(0)
+    const [initials, setInitials] = useState("")
     const { startGame } = useGame()
     const { progress, assets } = useLoadAssets()
 
+    const handleButtonHover = () => assets?.sounds?.playButtonHover()
+    const handleButtonClick = () => assets?.sounds?.playButtonClick()
+
+    const handleGameReset = () => {
+        setGameState("start")
+        setGameDifficulty("")
+        setFinalScore(0)
+    }
+
     const handleGameStart = (difficulty) => {
-        setGameState("game")
+        handleButtonClick()
+        setGameState("playing")
         setGameDifficulty(difficulty)
     }
 
-    const handleSubmitScore = () => {
-        console.log("Submitted")
-        setGameState("start")
+    const handleSubmitScore = () => {    
+        handleButtonClick()
+
+        if (initials.length !== 3) {
+
+            if (!window.confirm("Initials must be 3 characters. If you continue, your score will not be saved.")) {
+                console.log("Not saved")
+                addScoreCallback({name: initials, difficulty: gameDifficulty, collected: finalScore})
+                return
+            }
+        }
+        else {
+            console.log("Saved")
+            addScoreCallback({name: initials, difficulty: gameDifficulty, collected: finalScore})
+        }
+
+        handleGameReset()
     }
 
     const getScore = (score) => {
@@ -26,10 +51,14 @@ const MainDisplay = () => {
     }
 
     const difficultyMap = {
-        1: "Easy",
-        2: "Normal",
-        3: "Hard"
+        "easy": 1,
+        "medium": 2,
+        "hard" : 3
     }
+
+    useEffect(() => {
+        console.log(gameDifficulty)
+    }, [gameDifficulty])
 
 
     return (
@@ -63,9 +92,9 @@ const MainDisplay = () => {
                             <h2 className="text-2xl">Select a difficulty to start</h2>
 
                             <div className="flex gap-2">
-                                <button aria-label="Easy" onClick={() => handleGameStart(1)} className="text-xl px-3 py-2 w-[100px] rounded-xl bg-blue-600 border-2 border-blue-500 hover:bg-blue-700 hover:border-blue-600 duration-200">Easy</button>
-                                <button aria-label="Normal" onClick={() => handleGameStart(2)} className="text-xl px-3 py-2 w-[100px] rounded-xl bg-blue-600 border-2 border-blue-500 hover:bg-blue-700 hover:border-blue-600 duration-200">Normal</button>
-                                <button aria-label="Hard" onClick={() => handleGameStart(3)} className="text-xl px-3 py-2 w-[100px] rounded-xl bg-blue-600 border-2 border-blue-500 hover:bg-blue-700 hover:border-blue-600 duration-200">Hard</button>
+                                <button aria-label="Easy" onClick={() => handleGameStart("easy")} onMouseEnter={handleButtonHover} className="text-xl px-3 py-2 w-[100px] rounded-xl bg-blue-600 border-2 border-blue-500 hover:bg-blue-700 hover:border-blue-600 duration-200">Easy</button>
+                                <button aria-label="Medium" onClick={() => handleGameStart("medium")} onMouseEnter={handleButtonHover} className="text-xl px-3 py-2 w-[100px] rounded-xl bg-blue-600 border-2 border-blue-500 hover:bg-blue-700 hover:border-blue-600 duration-200">Medium</button>
+                                <button aria-label="Hard" onClick={() => handleGameStart("hard")} onMouseEnter={handleButtonHover} className="text-xl px-3 py-2 w-[100px] rounded-xl bg-blue-600 border-2 border-blue-500 hover:bg-blue-700 hover:border-blue-600 duration-200">Hard</button>
                             </div>
                         </div>
                     }
@@ -77,7 +106,7 @@ const MainDisplay = () => {
 
             {/* <!-- GAME SCREEN --> */}
             {gameState !== "start" && (
-                <CanvasComponent width={900} height={900} startGame={startGame} gameState={gameState} getScore={getScore} assets={assets} gameDifficulty={gameDifficulty} />
+                <CanvasComponent width={900} height={900} startGame={startGame} gameState={gameState} getScore={getScore} assets={assets} gameDifficulty={difficultyMap[gameDifficulty]} />
                 // <canvas id="gameCanvas" className="p-0 img-fluid border"></canvas>
             )}
             
@@ -91,7 +120,7 @@ const MainDisplay = () => {
 
                     <div className="flex flex-col gap-2 items-center justify-center">
                         {/* <input type="text" id="initialsInput" placeholder="Enter your initials" maxLength="3" className='text-xl px-3 py-2 rounded-xl bg-blue-600 border-2 border-blue-500 hover:bg-blue-700 hover:border-blue-600 duration-200 uppercase text-center' /> */}
-                        <h2 className='text-2xl'>Your score was <span className='text-blue-500'>{finalScore}</span> on <span className='text-blue-500'>{difficultyMap[gameDifficulty] || "Unknown"}</span></h2>
+                        <h2 className='text-2xl'>Your score was <span className='text-blue-500'>{finalScore}</span> on <span className='text-blue-500 capitalize'>{gameDifficulty || "Unknown"}</span></h2>
                         
                         <input 
                             type="text" 
@@ -99,11 +128,19 @@ const MainDisplay = () => {
                             placeholder="Enter your initials" 
                             maxLength="3" 
                             onInput={(e) => e.target.value = e.target.value.toUpperCase()} 
-                            className='text-xl px-3 py-2 rounded-xl bg-transparent border duration-200 text-center' 
+                            onChange={(e) => setInitials(e.target.value)}
+                            className='text-xl px-3 py-2 rounded-xl bg-transparent border duration-200 text-center'
                         />
                     </div>
 
-                    <button aria-label="submit score" onClick={() => handleSubmitScore()} className="text-xl px-3 py-2 w-[100px] rounded-xl bg-blue-600 border-2 border-blue-500 hover:bg-blue-700 hover:border-blue-600 duration-200">Submit</button>
+                    <button 
+                        aria-label="submit score" 
+                        onClick={() => handleSubmitScore()} 
+                        className="text-xl px-3 py-2 w-[100px] rounded-xl bg-blue-600 border-2 border-blue-500 hover:bg-blue-700 hover:border-blue-600 duration-200"
+                        onMouseEnter={handleButtonHover}
+                    >
+                        Submit
+                    </button>
                 </div>
             )}
         </div>
