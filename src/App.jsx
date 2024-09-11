@@ -26,3 +26,12 @@ function App() {
 }
 
 export default App
+
+
+/* TODO ---------------------
+Slow down game?
+Get scoreboard working
+
+Setup backend and database for score keeping
+
+*/
