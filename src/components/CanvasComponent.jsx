@@ -7,7 +7,7 @@ const CanvasComponent = ({ width, height, startGame, gameState, getScore, assets
     const canvas = canvasRef.current
     const ctx = canvas.getContext('2d')
 
-    if (gameState === 'game' && assets) {
+    if (gameState === 'playing' && assets) {
       startGame(canvas, ctx, assets, gameDifficulty, getScore)
     }
   }, [startGame, gameState, assets, gameDifficulty, getScore])
