@@ -35,10 +35,10 @@ const useLoadAssets = () => {
       setProgress((loadedAssets / totalAssets) * 100)
     }
 
-    const loadAudio = (src) => {
+    const loadAudio = (src, volume = 0.5) => {
       return new Promise((resolve) => {
         const audio = new Audio(src)
-        audio.volume = 0.5
+        audio.volume = volume
         audio.onloadeddata = () => {
           updateProgress()
           resolve(audio)
@@ -55,22 +55,22 @@ const useLoadAssets = () => {
         }
         img.src = src
       })
-    }
+    }    
 
     // Load all audio assets
     const audioAssets = Promise.all([
-      loadAudio(gameStartSound),
-      loadAudio(gameMusic),
-      loadAudio(gameOverSound),
-      loadAudio(buttonClickSound),
-      loadAudio(buttonHoverSound),
-      loadAudio(thrusterSound),
-      loadAudio(collectedPodSound),
-      loadAudio(shootSound),
-      loadAudio(asteroidExplosionSound),
-      loadAudio(collisionSound),
-      loadAudio(electricitySound),
-      loadAudio(explosionSound),
+      loadAudio(gameStartSound, 0.5),
+      loadAudio(gameMusic, 0.2),
+      loadAudio(gameOverSound, 0.5),
+      loadAudio(buttonClickSound, 0.5),
+      loadAudio(buttonHoverSound, 0.5),
+      loadAudio(thrusterSound, 0.9),
+      loadAudio(collectedPodSound, 0.5),
+      loadAudio(shootSound, 0.5),
+      loadAudio(asteroidExplosionSound, 0.5),
+      loadAudio(collisionSound, 0.5),
+      loadAudio(electricitySound, 0.5),
+      loadAudio(explosionSound, 0.5),
     ])
 
     // Load all image assets
@@ -84,20 +84,69 @@ const useLoadAssets = () => {
     ])
 
     Promise.all([audioAssets, imageAssets]).then(([loadedAudioAssets, loadedImageAssets]) => {
+      
+      const resetAndPlaySound = (index) => {
+        // try {
+        //   loadedAudioAssets[index].currentTime = 0
+        //   loadedAudioAssets[index].play()
+        // } catch (error) {
+        //   console.error("Error playing sound:", error)
+        // }
+        try {
+          loadedAudioAssets[index].currentTime = 0
+          loadedAudioAssets[index].muted = true // Mute initially
+          loadedAudioAssets[index].play().then(() => {
+            loadedAudioAssets[index].muted = false // Unmute after play starts
+          }).catch((error) => {
+            console.error("Error playing sound:", error)
+          })
+        } catch (error) {
+          console.error("Error playing sound:", error)
+        }
+      }
+      const playSound = (index) => loadedAudioAssets[index].play()
+      const pauseSound = (index) => loadedAudioAssets[index].pause()
+      
       setAssets({
+        // sounds: {
+        //   gameStart: loadedAudioAssets[0],
+        //   gameMusic: loadedAudioAssets[1],
+        //   gameOver: loadedAudioAssets[2],
+        //   buttonClick: loadedAudioAssets[3],
+        //   buttonHover: loadedAudioAssets[4],
+        //   thruster: loadedAudioAssets[5],
+        //   collectedPod: loadedAudioAssets[6],
+        //   shoot: loadedAudioAssets[7],
+        //   asteroidExplosion: loadedAudioAssets[8],
+        //   collision: loadedAudioAssets[9],
+        //   electricity: loadedAudioAssets[10],
+        //   explosion: loadedAudioAssets[11],
+        // },
         sounds: {
-          gameStart: loadedAudioAssets[0],
-          gameMusic: loadedAudioAssets[1],
-          gameOver: loadedAudioAssets[2],
-          buttonClick: loadedAudioAssets[3],
-          buttonHover: loadedAudioAssets[4],
-          thruster: loadedAudioAssets[5],
-          collectedPod: loadedAudioAssets[6],
-          shoot: loadedAudioAssets[7],
-          asteroidExplosion: loadedAudioAssets[8],
-          collision: loadedAudioAssets[9],
-          electricity: loadedAudioAssets[10],
-          explosion: loadedAudioAssets[11],
+          playGameStart: () => resetAndPlaySound(0),
+          playGameOver: () => resetAndPlaySound(2),
+
+          playGameMusic: () => playSound(1),
+          pauseGameMusic: () => pauseSound(1),
+          
+          playButtonClick: () => resetAndPlaySound(3),
+          playButtonHover: () => resetAndPlaySound(4),
+
+          playThruster: () => playSound(5),
+          pauseThruster: () => pauseSound(5),
+
+          playCollectedPod: () => resetAndPlaySound(6),
+          playShoot: () => resetAndPlaySound(7),
+          playAsteroidExplosion: () => resetAndPlaySound(8),
+          playCollision: () => playSound(9),
+          playElectricity: () => playSound(10),
+          playExplosion: () => playSound(11),
+          stopAllSounds: () => {
+            loadedAudioAssets.forEach(audio => {
+              audio.pause()
+              audio.currentTime = 0
+            })
+          },
         },
         images: {
           background: loadedImageAssets[0],
