@@ -1,5 +1,5 @@
 export default class Asteroid {
-    constructor(ctx, canvas, maxAsteroidSpeed, gameStateRef, asteroidImage){
+    constructor(ctx, canvas, maxAsteroidSpeed, gameStateRef, asteroidImage, playAsteroidExplosion){
         this.width = "72"
         this.height = "72"
         this.frameX = Math.floor(Math.random() * 4)
@@ -20,7 +20,9 @@ export default class Asteroid {
         this.ctx = ctx
         this.canvas = canvas
         this.gameStateRef = gameStateRef
+        
         this.asteroidImage = asteroidImage
+        this.playAsteroidExplosion = playAsteroidExplosion
     }
     draw(){
         this.ctx.save()
@@ -124,8 +126,8 @@ export default class Asteroid {
             ry <= this.y + (this.size*0.6) &&
             !this.explode
         ) {
-            // $(asteroidExplosionSound).prop('currentTime',0)
-            // $(asteroidExplosionSound).trigger('play')
+            this.playAsteroidExplosion()
+
             //ADD EXPLOSION SPRITE
             this.explode = true
             this.tally = 0

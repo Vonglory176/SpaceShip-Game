@@ -16,7 +16,7 @@ window.addEventListener('keyup', (e) => {
 })
 
 export default class Player {
-    constructor(ctx, canvas, gameStateRef, playerImage, bulletImage) {
+    constructor(ctx, canvas, gameStateRef, playerImage, bulletImage, playThruster, pauseThruster, playShoot, playCollision, playElectricity, playExplosion, playGameOver, pauseGameMusic) {
         // this.width = "72"
         // this.height = "100"
         this.width = 36
@@ -44,8 +44,18 @@ export default class Player {
         this.ctx = ctx
         this.canvas = canvas
         this.gameStateRef = gameStateRef
+
         this.playerImage = playerImage
         this.bulletImage = bulletImage
+
+        this.playThruster = playThruster
+        this.pauseThruster = pauseThruster
+        this.playShoot = playShoot
+        this.playCollision = playCollision
+        this.playElectricity = playElectricity
+        this.playExplosion = playExplosion
+        this.playGameOver = playGameOver
+        this.pauseGameMusic = pauseGameMusic
     }
     draw(){
         this.ctx.save()
@@ -73,26 +83,29 @@ export default class Player {
 
         //Exploding Check
         if(this.explode === true) {
+            
+            this.pauseGameMusic()
+
             if (this.frameY < 3) {
                 this.tally = 0
 
-                // $(thrusterSound).trigger('pause')
-                // $(collisionSound).trigger('play')
+                this.pauseThruster()
+                this.playCollision()
+
                 this.width = "100"
                 this.height = "100"
                 this.frameX = 0
                 this.frameY = 3
             }
             else if (this.frameY === 3 && this.tally < 1) {
-                // $(electricitySound).trigger('play')
-                
+                this.playElectricity()
             }
             else if (this.tally < 1.8) {
-                // $(explosionSound).trigger('play')
+                this.playExplosion()
                 this.frameY = 4
             }
             else if (this.tally > 1.8) {
-                // $(gameOverSound).trigger('play')
+                this.playGameOver()
                 this.gameStateRef.gameState = false
             }
         }
@@ -100,7 +113,9 @@ export default class Player {
             //PLAYER KEYPRESS CHECKS
             let right = 39, left = 37, up = 38, down = 40, shoot = 32
             if (up in keysDown || down in keysDown || left in keysDown || right in keysDown) {
-                // $(thrusterSound).trigger('play')
+                
+                this.playThruster()
+
                 if (this.move === false) this.frameX = 0 
                 this.move = true
 
@@ -154,7 +169,7 @@ export default class Player {
                 this.move = false
                 
                 //Inertia + Movement Translation
-                // $(thrusterSound).trigger('pause')
+                this.pauseThruster()
                 if (this.speedY < 0) this.speedY += this.speedLoss
                 if (this.speedY > 0) this.speedY -= this.speedLoss
                 if (this.speedX < 0) this.speedX += this.speedLoss
@@ -169,8 +184,7 @@ export default class Player {
             //SPRITE UPDATE (And shooting trigger)
             //Shooting?
             if (shoot in keysDown && this.shootDelay < this.tally) {
-                // $(shootSound).prop('currentTime',0)
-                // $(shootSound).trigger('play')
+                this.playShoot()
                 this.gameStateRef.bulletArray.push(new Bullet(this.x,this.y,this.angle, this.ctx, this.canvas, this.gameStateRef, this.bulletImage))
                 this.shoot = true
                 this.tally = 0
