@@ -32,20 +32,13 @@ const useGame = () => {
         resetGameState(gameDifficulty)
 
         // let { current: gameState, difficulty, maxAsteroidSpeed, asteroidArray, asteroidField1, asteroidField2, asteroidField3, asteroidField4, collectible, player, bulletArray, time, collected } = gameStateRef
-        const { images, audio } = assets
+        const { images, sounds } = assets
         const {background, asteroidField, asteroid, collectible, bullet, player} = images
-        // const {gameMusic, gameOver, buttonClick, buttonHover, thruster, collectedPod, shoot, asteroidExplosion, collision, electricity, explosion} = audio
-
-        // const updateCollected = (amount) => {
-        //     gameStateRef.current.collected += amount
-        // }
-    
-        // const updateDifficulty = (newDifficulty) => {
-        //     gameStateRef.current.difficulty = newDifficulty
-        // }
+        const {playGameStart, playGameMusic, pauseGameMusic, playGameOver, playButtonClick, playButtonHover, playThruster, pauseThruster, playCollectedPod, playShoot, playAsteroidExplosion, playCollision, playElectricity, playExplosion, stopAllSounds} = sounds
+        // const {gameMusic, gameOver, buttonClick, buttonHover, thruster, collectedPod, shoot, asteroidExplosion, collision, electricity, explosion} = sounds
     
         const addAsteroid = () => {
-            gameStateRef.current.asteroidArray.push(new Asteroid(ctx, canvas, gameStateRef.current.maxAsteroidSpeed, gameStateRef.current, asteroid))
+            gameStateRef.current.asteroidArray.push(new Asteroid(ctx, canvas, gameStateRef.current.maxAsteroidSpeed, gameStateRef.current, asteroid, playAsteroidExplosion))
         }
         
         function collectibleCollision(){ //Include negation for player?
@@ -57,8 +50,8 @@ const useGame = () => {
                 gameStateRef.current.player.y <= gameStateRef.current.collectible.y + (gameStateRef.current.collectible.size)&&
                 !gameStateRef.current.player.explode
             ) {
-                // $(collectedPodSound).prop('currentTime',0)
-                // $(collectedPodSound).trigger('play')
+                playCollectedPod()
+
                 addAsteroid() // this.ctx, this.canvas
                 gameStateRef.current.collected++
                 return true
@@ -74,8 +67,8 @@ const useGame = () => {
                     gameStateRef.current.bulletArray[i].y <= gameStateRef.current.collectible.y + (gameStateRef.current.collectible.size) && 
                     gameStateRef.current.bulletArray[i].width > 0
                 ) {
-                    // $(asteroidExplosionSound).prop('currentTime',0)
-                    // $(asteroidExplosionSound).trigger('play')
+                    playAsteroidExplosion()
+
                     gameStateRef.current.bulletArray[i].width = 0
                     gameStateRef.current.collectible.explode = true
                     gameStateRef.current.collectible.frameY = 1
@@ -95,13 +88,16 @@ const useGame = () => {
         gameStateRef.current.asteroidField3 = new AsteroidField(1, 0, 0 - ctx.canvas.height, 40, ctx, canvas, gameStateRef.current, asteroidField)
         gameStateRef.current.asteroidField4 = new AsteroidField(1, 1, 0, 40, ctx, canvas, gameStateRef.current, asteroidField)
         gameStateRef.current.collectible = new Collectible(ctx, canvas, gameStateRef.current, addAsteroid, collectible, collectibleCollision, collectibleShot)
-        gameStateRef.current.player = new Player(ctx, canvas, gameStateRef.current, player, bullet)
+        gameStateRef.current.player = new Player(ctx, canvas, gameStateRef.current, player, bullet, playThruster, pauseThruster, playShoot, playCollision, playElectricity, playExplosion, playGameOver, pauseGameMusic)
         for (let i = 0; i < 4 + gameStateRef.current.difficulty; i++) addAsteroid() // addAsteroid(ctx, canvas)
 
+        playGameStart()
+        
         const render = (delta) => {
             ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
             ctx.drawImage(background, 0, 0, 900, 900)
-            //   $(gameMusic).trigger('play')
+
+            playGameMusic()
 
             gameStateRef.current.asteroidField1.update(delta / 1000)
             gameStateRef.current.asteroidField1.draw()
@@ -137,6 +133,8 @@ const useGame = () => {
             ctx.fillText("LifePods Collected: " + gameStateRef.current.collected, 32, 32)
         }
 
+        let timeScale = 0.7
+
         const main = (now) => {
             // console.log(gameStateRef.current.time, now)
             if (time == null) {
@@ -146,7 +144,7 @@ const useGame = () => {
                 requestAnimationFrame(main)
                 return
             }
-            const delta = now - time
+            const delta = (now - time) * timeScale
             // console.log(delta, now, time)
             
             // Limit to 60fps (1000ms / 60fps = ~16.67ms per frame)
@@ -158,10 +156,12 @@ const useGame = () => {
                 
             if (gameStateRef.current.gameState === true) requestAnimationFrame(main)
             else {
-                // $(gameMusic).trigger('pause')
-                // Handle game over logic here
+                // stopAllSounds()
+                // pauseGameMusic()
+                
                 console.log(gameStateRef.current.gameState)
                 getScore(gameStateRef.current.collected)
+                playGameOver()
             }
         }
 
