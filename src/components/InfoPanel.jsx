@@ -1,7 +1,7 @@
 import React from 'react'
-import objectiveCollect from '../assets/images/objectiveCollect.png'
-import arrowKeys from '../assets/images/arrowKeys.png'
-import spaceBar from '../assets/images/spaceBar.png'
+import objectiveCollect from '../assets/images/objectiveCollect.webp'
+import arrowKeys from '../assets/images/arrowKeys.webp'
+import spaceBar from '../assets/images/spaceBar.webp'
 
 const InfoPanel = () => {
   return (
@@ -11,7 +11,7 @@ const InfoPanel = () => {
         <div className="objective flex flex-col gap-2 border-purple-400 rounded-lg p-2 w-full lg:px-0">
             {/* <h3 className='text-center text-2xl'>Objective</h3> */}
             <h3 className='text-blue-300 font-bold text-xl uppercase text-center sm:text-left lg:text-center'>Objective</h3>
-            <p className=''> You're a rescue ship responding to an emergency transmission from a nearby asteroid field. Do your best to collect as many lifepods as you can but be careful, the further you venture the more difficult it'll become.</p>
+            <p className=''> You're piloting a rescue ship responding to an emergency transmission from a nearby asteroid field. Do your best to collect as many lifepods as you can but be careful, the further you venture the more difficult it'll become.</p>
             {/* <img src={objectiveCollect} className="object-contain" /> */}
         </div>
 
@@ -31,7 +31,7 @@ const InfoPanel = () => {
                     {/* <p className='text-gray-300'>Arrow-Keys</p> */}
                 </div>
 
-                <img src={arrowKeys} className="object-contain max-w-[130px] min-h-[85px]" />
+                <img src={arrowKeys} alt="Arrow keys to move" className="object-contain max-w-[130px] min-h-[85px]" />
 
             </div>
 
@@ -43,7 +43,7 @@ const InfoPanel = () => {
                     {/* <p className='text-gray-300'>Spacebar</p> */}
                 </div>
 
-                <img src={spaceBar} className="object-contain max-w-[130px] min-h-[86px]" />
+                <img src={spaceBar} alt="Spacebar to shoot" className="object-contain max-w-[130px] min-h-[86px]" />
                 
             </div>
 
@@ -55,7 +55,7 @@ const InfoPanel = () => {
                     {/* <p className='text-gray-300'>Spacebar</p> */}
                 </div>
 
-                <img src={objectiveCollect} className="object-contain max-w-[130px] min-h-[86px]" />
+                <img src={objectiveCollect} alt="Collect lifepods with your ship" className="object-contain max-w-[130px] min-h-[86px]" />
                 
             </div>
         </div>
