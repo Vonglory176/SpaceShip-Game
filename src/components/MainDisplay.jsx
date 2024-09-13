@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import CanvasComponent from './CanvasComponent'
 import useGame from '../hooks/useGame'
-import useLoadAssets from '../hooks/loadAssets'
-
-const MainDisplay = ({addScoreCallback}) => {
-    const [gameState, setGameState] = useState("start")
-    const [gameDifficulty, setGameDifficulty] = useState("")
+// import useLoadAssets from '../hooks/loadAssets'
+import { useAssetsContext } from '../context/assetContext'
+import { useSiteContext } from '../context/siteContext'
+import { containsBadWords } from '../helpers/helper'
+const MainDisplay = () => {
+    const { progress, assets } = useAssetsContext()
+    const { gameState, setGameState, gameDifficulty, setGameDifficulty, addScore } = useSiteContext()
     const [finalScore, setFinalScore] = useState(0)
     const [initials, setInitials] = useState("")
     const { startGame } = useGame()
-    const { progress, assets } = useLoadAssets()
+    const [errorMessage, setErrorMessage] = useState("")
 
+    // const { progress, assets } = useLoadAssets()
     // const handleButtonHover = () => assets?.sounds?.playButtonHover()
     const handleButtonClick = () => assets?.sounds?.playButtonClick()
 
@@ -19,6 +22,7 @@ const MainDisplay = ({addScoreCallback}) => {
         setGameDifficulty("")
         setFinalScore(0)
         setInitials("")
+        setErrorMessage("")
     }
 
     const handleGameStart = (difficulty) => {
@@ -30,20 +34,41 @@ const MainDisplay = ({addScoreCallback}) => {
     const handleSubmitScore = () => {    
         // handleButtonClick()
 
-        if (initials.length !== 3) {
+        // Only allow submission if score is above zero
+        if (scoreIsAboveZero) {
 
-            if (!window.confirm("Initials must be 3 characters. If you continue, your score will not be saved.")) {
-                console.log("Not saved")
-                // addScoreCallback({name: initials, difficulty: gameDifficulty, collected: finalScore})
+            // Length Check
+            if (initials.length !== 3) {
+                setErrorMessage({
+                    type: "length", 
+                    message: "Initials must be 3 characters to be saved. Are you sure you want to continue?"
+                })
+                return
+                // if (!window.confirm("Initials must be 3 characters. If you continue, your score will not be saved.")) {
+                //     console.log("Not saved")
+                //     // addScore({name: initials, difficulty: gameDifficulty, collected: finalScore})
+                //     return
+                // }
+            }
+
+            // Bad Word Check
+            else if (containsBadWords(initials)) {
+                setErrorMessage({
+                    type: "badWord", 
+                    message: "Please remove any profanity before submitting your score."
+                })
                 return
             }
+
+            // Save Score
+            else {    
+                console.log("Saved")
+                addScore({name: initials, difficulty: gameDifficulty, collected: finalScore})
+            }
         }
-        else {
-            console.log("Saved")
-            addScoreCallback({name: initials, difficulty: gameDifficulty, collected: finalScore})
-        }
-        
-        handleButtonClick()
+
+        // Reset the game        
+        handleButtonClick()        
         handleGameReset()
     }
 
@@ -52,15 +77,17 @@ const MainDisplay = ({addScoreCallback}) => {
         setGameState("end")
     }
 
-    const difficultyMap = {
-        "easy": 1,
-        "medium": 2,
-        "hard" : 3
-    }
+    const scoreIsAboveZero = Boolean(finalScore > 0)
 
-    useEffect(() => {
-        console.log(gameDifficulty)
-    }, [gameDifficulty])
+    // const difficultyMap = {
+    //     "easy": 1,
+    //     "medium": 2,
+    //     "hard" : 3
+    // }
+
+    // useEffect(() => {
+    //     console.log(gameDifficulty)
+    // }, [gameDifficulty])
 
 
     return (
@@ -108,7 +135,7 @@ const MainDisplay = ({addScoreCallback}) => {
 
             {/* <!-- GAME SCREEN --> */}
             {gameState !== "start" && (
-                <CanvasComponent width={900} height={900} startGame={startGame} gameState={gameState} getScore={getScore} assets={assets} gameDifficulty={difficultyMap[gameDifficulty]} />
+                <CanvasComponent width={900} height={900} startGame={startGame} getScore={getScore} /> // {/* gameDifficulty={difficultyMap[gameDifficulty] */}
                 // <canvas id="gameCanvas" className="p-0 img-fluid border"></canvas>
             )}
             
@@ -124,7 +151,7 @@ const MainDisplay = ({addScoreCallback}) => {
                         {/* <input type="text" id="initialsInput" placeholder="Enter your initials" maxLength="3" className='text-xl px-3 py-2 rounded-xl bg-blue-600 border-2 border-blue-500 hover:bg-blue-700 hover:border-blue-600 duration-200 uppercase text-center' /> */}
                         <h2 className='text-2xl'>Your score was <span className='text-blue-500'>{finalScore}</span> on <span className='text-blue-500 capitalize'>{gameDifficulty || "Unknown"}</span></h2>
                         
-                        <input 
+                        {scoreIsAboveZero && <input 
                             type="text" 
                             id="initialsInput" 
                             placeholder="Enter your initials" 
@@ -133,17 +160,50 @@ const MainDisplay = ({addScoreCallback}) => {
                             onInput={(e) => e.target.value = e.target.value.toUpperCase()} 
                             onChange={(e) => setInitials(e.target.value)}
                             className='text-xl px-3 py-2 rounded-xl bg-transparent border duration-200 text-center'
-                        />
-                    </div>
+                        />}
 
-                    <button 
-                        aria-label="submit score" 
-                        onClick={() => handleSubmitScore()} 
-                        className="text-xl px-3 py-2 w-[100px] rounded-xl bg-blue-600 border-2 border-blue-500 hover:bg-blue-700 hover:border-blue-600 duration-200"
-                        // onMouseEnter={handleButtonHover}
-                    >
-                        Submit
-                    </button>
+                        {errorMessage && <p className="text-red-500 text-lg text-center max-w-[330px]">{errorMessage.message}</p>}
+                    </div>
+                    
+
+                    {errorMessage?.type !== "length" ?
+                        <button 
+                            aria-label="submit score" 
+                            onClick={() => handleSubmitScore()} 
+                            className="text-xl px-3 py-2 w-[100px] rounded-xl bg-blue-600 border-2 border-blue-500 hover:bg-blue-700 hover:border-blue-600 duration-200"
+                            // disabled={errorMessage?.type === "badWord"}
+                            // onMouseEnter={handleButtonHover}
+                        >
+                            {scoreIsAboveZero? "Submit" : "Try Again"}
+                        </button>
+
+                        :
+
+                        <div className="flex flex-col gap-2 items-center justify-center">
+
+                            {/* <p className='text-xl text-red-500 max-w-[350px] text-center'>Are you sure you want to continue? Your score will not be saved. </p> */}
+
+                            <div className="flex gap-4">
+                                <button 
+                                aria-label="Return to Start Screen" 
+                                onClick={() => initials.length !== 3 ? handleGameReset() : handleSubmitScore()} 
+                                className="text-xl px-3 py-2 w-[109px] rounded-xl bg-red-700 border-2 border-red-600 hover:bg-red-800 hover:border-red-600 duration-200"
+                                // onMouseEnter={handleButtonHover}
+                                >
+                                    Continue
+                                </button>
+
+                                <button 
+                                aria-label="Cancel"
+                                onClick={() => setErrorMessage("")} 
+                                className="text-xl px-3 py-2 w-[109px] rounded-xl bg-blue-600 border-2 border-blue-500 hover:bg-blue-700 hover:border-blue-600 duration-200"
+                                // onMouseEnter={handleButtonHover}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    }
                 </div>
             )}
         </div>
