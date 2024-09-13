@@ -24,7 +24,7 @@ const ScorePanel = ({scoreList}) => {
 
         <hr className='w-full border-purple-400' />
 
-        <div className="">
+        <div className="max-h-[586px] overflow-y-auto">
           {sortedScoreList.map((score, index) => {
             const {name, collected, difficulty} = score
             return (
