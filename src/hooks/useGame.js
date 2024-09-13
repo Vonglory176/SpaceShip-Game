@@ -7,7 +7,7 @@ import Asteroid from '../classes/asteroid'
 import Collectible from '../classes/collectible'
 
 const useGame = () => {
-    const gameStateRef = useRef({})    
+    const gameStateRef = useRef({})
 
     const resetGameState = (difficulty) => {
         gameStateRef.current = {
@@ -133,7 +133,7 @@ const useGame = () => {
             ctx.fillText("LifePods Collected: " + gameStateRef.current.collected, 32, 32)
         }
 
-        let timeScale = 0.7
+        let timeScale = process.env.REACT_APP_GAME_SPEED_MODIFIER || 1 // 0.7
 
         const main = (now) => {
             // console.log(gameStateRef.current.time, now)
@@ -159,7 +159,7 @@ const useGame = () => {
                 // stopAllSounds()
                 // pauseGameMusic()
                 
-                console.log(gameStateRef.current.gameState)
+                // console.log(gameStateRef.current.gameState)
                 getScore(gameStateRef.current.collected)
                 playGameOver()
             }
