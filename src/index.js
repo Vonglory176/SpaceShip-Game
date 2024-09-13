@@ -2,12 +2,18 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './styles/index.css';
 import App from './App';
+import { SiteProvider } from './context/siteContext';
+import { AssetsProvider } from './context/assetContext';
 // import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <SiteProvider>
+      <AssetsProvider>
+        <App />
+      </AssetsProvider>
+    </SiteProvider>
   </React.StrictMode>
 );
 
