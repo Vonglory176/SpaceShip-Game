@@ -11,29 +11,30 @@ const MainDisplay = ({addScoreCallback}) => {
     const { startGame } = useGame()
     const { progress, assets } = useLoadAssets()
 
-    const handleButtonHover = () => assets?.sounds?.playButtonHover()
+    // const handleButtonHover = () => assets?.sounds?.playButtonHover()
     const handleButtonClick = () => assets?.sounds?.playButtonClick()
 
     const handleGameReset = () => {
         setGameState("start")
         setGameDifficulty("")
         setFinalScore(0)
+        setInitials("")
     }
 
     const handleGameStart = (difficulty) => {
-        handleButtonClick()
+        // handleButtonClick()
         setGameState("playing")
         setGameDifficulty(difficulty)
     }
 
     const handleSubmitScore = () => {    
-        handleButtonClick()
+        // handleButtonClick()
 
         if (initials.length !== 3) {
 
             if (!window.confirm("Initials must be 3 characters. If you continue, your score will not be saved.")) {
                 console.log("Not saved")
-                addScoreCallback({name: initials, difficulty: gameDifficulty, collected: finalScore})
+                // addScoreCallback({name: initials, difficulty: gameDifficulty, collected: finalScore})
                 return
             }
         }
@@ -41,7 +42,8 @@ const MainDisplay = ({addScoreCallback}) => {
             console.log("Saved")
             addScoreCallback({name: initials, difficulty: gameDifficulty, collected: finalScore})
         }
-
+        
+        handleButtonClick()
         handleGameReset()
     }
 
@@ -92,9 +94,9 @@ const MainDisplay = ({addScoreCallback}) => {
                             <h2 className="text-2xl">Select a difficulty to start</h2>
 
                             <div className="flex gap-2">
-                                <button aria-label="Easy" onClick={() => handleGameStart("easy")} onMouseEnter={handleButtonHover} className="text-xl px-3 py-2 w-[100px] rounded-xl bg-blue-600 border-2 border-blue-500 hover:bg-blue-700 hover:border-blue-600 duration-200">Easy</button>
-                                <button aria-label="Medium" onClick={() => handleGameStart("medium")} onMouseEnter={handleButtonHover} className="text-xl px-3 py-2 w-[100px] rounded-xl bg-blue-600 border-2 border-blue-500 hover:bg-blue-700 hover:border-blue-600 duration-200">Medium</button>
-                                <button aria-label="Hard" onClick={() => handleGameStart("hard")} onMouseEnter={handleButtonHover} className="text-xl px-3 py-2 w-[100px] rounded-xl bg-blue-600 border-2 border-blue-500 hover:bg-blue-700 hover:border-blue-600 duration-200">Hard</button>
+                                <button aria-label="Easy" onClick={() => handleGameStart("easy")} className="text-xl px-3 py-2 w-[100px] rounded-xl bg-blue-600 border-2 border-blue-500 hover:bg-blue-700 hover:border-blue-600 duration-200">Easy</button>  {/* onMouseEnter={handleButtonHover} */}
+                                <button aria-label="Medium" onClick={() => handleGameStart("medium")} className="text-xl px-3 py-2 w-[100px] rounded-xl bg-blue-600 border-2 border-blue-500 hover:bg-blue-700 hover:border-blue-600 duration-200">Medium</button>
+                                <button aria-label="Hard" onClick={() => handleGameStart("hard")} className="text-xl px-3 py-2 w-[100px] rounded-xl bg-blue-600 border-2 border-blue-500 hover:bg-blue-700 hover:border-blue-600 duration-200">Hard</button>
                             </div>
                         </div>
                     }
@@ -127,6 +129,7 @@ const MainDisplay = ({addScoreCallback}) => {
                             id="initialsInput" 
                             placeholder="Enter your initials" 
                             maxLength="3" 
+                            value={initials}
                             onInput={(e) => e.target.value = e.target.value.toUpperCase()} 
                             onChange={(e) => setInitials(e.target.value)}
                             className='text-xl px-3 py-2 rounded-xl bg-transparent border duration-200 text-center'
@@ -137,7 +140,7 @@ const MainDisplay = ({addScoreCallback}) => {
                         aria-label="submit score" 
                         onClick={() => handleSubmitScore()} 
                         className="text-xl px-3 py-2 w-[100px] rounded-xl bg-blue-600 border-2 border-blue-500 hover:bg-blue-700 hover:border-blue-600 duration-200"
-                        onMouseEnter={handleButtonHover}
+                        // onMouseEnter={handleButtonHover}
                     >
                         Submit
                     </button>
