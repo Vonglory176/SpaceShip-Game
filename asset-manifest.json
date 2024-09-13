@@ -1,0 +1,32 @@
+{
+  "files": {
+    "main.css": "/SpaceShip-Game/static/css/main.0e7d33c6.css",
+    "main.js": "/SpaceShip-Game/static/js/main.426522df.js",
+    "static/media/GameMusic.wav": "/SpaceShip-Game/static/media/GameMusic.1410a48041d5794e3435.wav",
+    "static/media/asteroidFieldBackgroundImage3.png": "/SpaceShip-Game/static/media/asteroidFieldBackgroundImage3.ca8a0e886bad645973fa.png",
+    "static/media/site-background-full.webp": "/SpaceShip-Game/static/media/site-background-full.3551c5a1f79c95291da7.webp",
+    "static/media/GameStart.wav": "/SpaceShip-Game/static/media/GameStart.28f7c81af3645919d0f8.wav",
+    "static/media/ButtonHover.wav": "/SpaceShip-Game/static/media/ButtonHover.5b01190eec8b4c32efa4.wav",
+    "static/media/Thruster.mp3": "/SpaceShip-Game/static/media/Thruster.b71f5d645f7768ffd3b4.mp3",
+    "static/media/AsteroidExplosion.wav": "/SpaceShip-Game/static/media/AsteroidExplosion.529b8944e83780d8ea9f.wav",
+    "static/media/AsteroidCollision.wav": "/SpaceShip-Game/static/media/AsteroidCollision.266cff0e62c22b33ad6b.wav",
+    "static/media/Explosion.wav": "/SpaceShip-Game/static/media/Explosion.5ae9b78cdefbba1dc4fe.wav",
+    "static/media/GameOver.wav": "/SpaceShip-Game/static/media/GameOver.7ebf8a8fc00b5d6e2bf5.wav",
+    "static/media/ButtonClick.wav": "/SpaceShip-Game/static/media/ButtonClick.ab583e220d9d8c0b969c.wav",
+    "static/media/Electricity.wav": "/SpaceShip-Game/static/media/Electricity.2ea668c10571ccacf504.wav",
+    "static/media/Shoot.wav": "/SpaceShip-Game/static/media/Shoot.c688a5f466c3d6f52836.wav",
+    "static/media/CollectedPod.wav": "/SpaceShip-Game/static/media/CollectedPod.c27f1353a8820de87fc4.wav",
+    "static/media/asteroidSpriteSheet2.png": "/SpaceShip-Game/static/media/asteroidSpriteSheet2.3ee06ef654213d9bae9b.png",
+    "static/media/lifepodSpriteSheet.png": "/SpaceShip-Game/static/media/lifepodSpriteSheet.6893fa44afe1677e9d2c.png",
+    "static/media/spaceShipSpriteSheet5.png": "/SpaceShip-Game/static/media/spaceShipSpriteSheet5.e060c6248c0f77c54b70.png",
+    "static/media/background.png": "/SpaceShip-Game/static/media/background.2bac0eb908603a954635.png",
+    "static/media/site-background-small.webp": "/SpaceShip-Game/static/media/site-background-small.1527c040b9cb259f0b18.webp",
+    "index.html": "/SpaceShip-Game/index.html",
+    "main.0e7d33c6.css.map": "/SpaceShip-Game/static/css/main.0e7d33c6.css.map",
+    "main.426522df.js.map": "/SpaceShip-Game/static/js/main.426522df.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.0e7d33c6.css",
+    "static/js/main.426522df.js"
+  ]
+}
