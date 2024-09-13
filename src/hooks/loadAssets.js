@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
 
 // Images
-import bgImage from '../assets/images/background/background.png'
-import asteroidFieldImage from '../assets/images/background/asteroidFieldBackgroundImage3.png'
-import asteroidImage from '../assets/images/asteroids/asteroidSpriteSheet2.png'
-import collectibleImage from '../assets/images/lifepod/lifepodSpriteSheet.png'
-import bulletImage from '../assets/images/bullet.png'
-import playerImage from '../assets/images/spaceship/spaceShipSpriteSheet5.png'
+import bgImage from '../assets/images/background/background.webp'
+import asteroidFieldImage from '../assets/images/background/asteroidFieldBackgroundImage3.webp'
+import asteroidImage from '../assets/images/asteroids/asteroidSpriteSheet2.webp'
+import collectibleImage from '../assets/images/lifepod/lifepodSpriteSheet.webp'
+import bulletImage from '../assets/images/bullet.webp'
+import playerImage from '../assets/images/spaceship/spaceShipSpriteSheet5.webp'
 
 // Sounds
 import gameStartSound from '../assets/sounds/GameStart.wav'
