@@ -51,6 +51,7 @@ export default App
 
 /* TODO ---------------------
 
+Finish animated background
 Pagination for scoreboard
 Setup backend and database for score keeping
 
