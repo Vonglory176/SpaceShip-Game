@@ -1,0 +1,16 @@
+{
+    "playerScores": [
+        {"name": "ABC", "difficulty": "easy", "collected": 5},
+        {"name": "DEF", "difficulty": "medium", "collected": 12},
+        {"name": "GHI", "difficulty": "hard", "collected": 18},
+        {"name": "JKL", "difficulty": "easy", "collected": 3},
+        {"name": "MNO", "difficulty": "medium", "collected": 9},
+        {"name": "PQR", "difficulty": "hard", "collected": 15},
+        {"name": "STU", "difficulty": "easy", "collected": 7},
+        {"name": "VWX", "difficulty": "medium", "collected": 11},
+        {"name": "YZA", "difficulty": "hard", "collected": 20},
+        {"name": "BCD", "difficulty": "easy", "collected": 4},
+        {"name": "EFG", "difficulty": "medium", "collected": 10},
+        {"name": "HIJ", "difficulty": "hard", "collected": 16}
+    ]
+}
