@@ -7,7 +7,9 @@ import MainDisplay from "./components/MainDisplay"
 import { useEffect, useState } from "react"
 
 function App() {
-  const [scoreList, setScoreList] = useState([{name: "TIM", difficulty: "easy", collected: 7}])
+  const [scoreList, setScoreList] = useState([
+    // {name: "TIM", difficulty: "easy", collected: 7},
+  ])
 
   const addScoreCallback = (newScore) => {
     console.log(newScore)
@@ -48,9 +50,8 @@ export default App
 
 
 /* TODO ---------------------
-Slow down game?
-Get scoreboard working
 
+Pagination for scoreboard
 Setup backend and database for score keeping
 
 */
