@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/SpaceShip-Game/static/css/main.0e7d33c6.css",
-    "main.js": "/SpaceShip-Game/static/js/main.426522df.js",
+    "main.js": "/SpaceShip-Game/static/js/main.58b9c03f.js",
     "static/media/GameMusic.wav": "/SpaceShip-Game/static/media/GameMusic.1410a48041d5794e3435.wav",
     "static/media/asteroidFieldBackgroundImage3.png": "/SpaceShip-Game/static/media/asteroidFieldBackgroundImage3.ca8a0e886bad645973fa.png",
     "static/media/site-background-full.webp": "/SpaceShip-Game/static/media/site-background-full.3551c5a1f79c95291da7.webp",
@@ -23,10 +23,10 @@
     "static/media/site-background-small.webp": "/SpaceShip-Game/static/media/site-background-small.1527c040b9cb259f0b18.webp",
     "index.html": "/SpaceShip-Game/index.html",
     "main.0e7d33c6.css.map": "/SpaceShip-Game/static/css/main.0e7d33c6.css.map",
-    "main.426522df.js.map": "/SpaceShip-Game/static/js/main.426522df.js.map"
+    "main.58b9c03f.js.map": "/SpaceShip-Game/static/js/main.58b9c03f.js.map"
   },
   "entrypoints": [
     "static/css/main.0e7d33c6.css",
-    "static/js/main.426522df.js"
+    "static/js/main.58b9c03f.js"
   ]
 }
