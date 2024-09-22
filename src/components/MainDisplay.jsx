@@ -99,7 +99,7 @@ const MainDisplay = () => {
                 <div id="startScreen" className="flex flex-col gap-8 items-center justify-center h-full w-full">
 
                     {/* Title */}
-                    <h1 className="text-4xl sm:text-5xl font-bold text-center">Asteroid Gauntlet</h1>
+                    <h1 className="text-4xl sm:text-5xl text-blue-300 font-bold text-center">Asteroid Gauntlet</h1>
 
 
                     
