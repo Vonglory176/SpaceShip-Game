@@ -5,6 +5,7 @@ import useGame from '../hooks/useGame'
 import { useAssetsContext } from '../context/assetContext'
 import { useSiteContext } from '../context/siteContext'
 import { containsBadWords } from '../helpers/helper'
+import { FaGithub } from 'react-icons/fa'
 const MainDisplay = () => {
     const { progress, assets } = useAssetsContext()
     const { gameState, setGameState, gameDifficulty, setGameDifficulty, addScore } = useSiteContext()
@@ -129,7 +130,7 @@ const MainDisplay = () => {
                     }
 
                     {/* Author */}
-                    <p className="text-sm font-semibold">Skyler Conley - 2024</p>
+                    <p className="text-sm font-semibold flex items-center gap-2">Skyler 2023 <a href="https://github.com/Vonglory176/SpaceShip-Game" target="_blank" rel="noopener noreferrer"><FaGithub size={24} /></a></p>
                 </div>
             )}
 
