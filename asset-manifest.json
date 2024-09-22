@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/SpaceShip-Game/static/css/main.72809453.css",
-    "main.js": "/SpaceShip-Game/static/js/main.491dffb2.js",
+    "main.js": "/SpaceShip-Game/static/js/main.5c1fdd15.js",
     "static/media/GameMusic.wav": "/SpaceShip-Game/static/media/GameMusic.1410a48041d5794e3435.wav",
     "static/media/site-background-full.webp": "/SpaceShip-Game/static/media/site-background-full.3551c5a1f79c95291da7.webp",
     "static/media/GameStart.wav": "/SpaceShip-Game/static/media/GameStart.28f7c81af3645919d0f8.wav",
@@ -27,10 +27,10 @@
     "static/media/background.webp": "/SpaceShip-Game/static/media/background.c8db88f09e277f8b1483.webp",
     "index.html": "/SpaceShip-Game/index.html",
     "main.72809453.css.map": "/SpaceShip-Game/static/css/main.72809453.css.map",
-    "main.491dffb2.js.map": "/SpaceShip-Game/static/js/main.491dffb2.js.map"
+    "main.5c1fdd15.js.map": "/SpaceShip-Game/static/js/main.5c1fdd15.js.map"
   },
   "entrypoints": [
     "static/css/main.72809453.css",
-    "static/js/main.491dffb2.js"
+    "static/js/main.5c1fdd15.js"
   ]
 }
